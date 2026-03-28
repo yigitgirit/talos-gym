@@ -1,0 +1,18 @@
+DO
+$do$
+BEGIN
+   IF NOT EXISTS (
+      SELECT FROM pg_catalog.pg_roles
+      WHERE  rolname = 'gym_app') THEN
+
+      CREATE ROLE gym_app LOGIN PASSWORD 'talosgym123';
+   END IF;
+END
+$do$;
+
+GRANT ALL PRIVILEGES ON DATABASE gym_dev TO gym_app;
+
+\c gym_dev
+GRANT ALL PRIVILEGES ON SCHEMA public TO gym_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO gym_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO gym_app;
