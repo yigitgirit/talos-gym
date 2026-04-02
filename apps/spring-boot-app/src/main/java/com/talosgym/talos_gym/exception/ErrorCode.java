@@ -45,7 +45,12 @@ public enum ErrorCode {
     // 5. GENERIC SYSTEM ERRORS (E5xxx)
     // =====================================================================
     INTERNAL_SERVER_ERROR("E5000", "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
-    NOT_IMPLEMENTED("E5001", "Feature not implemented", HttpStatus.NOT_IMPLEMENTED);
+    NOT_IMPLEMENTED("E5001", "Feature not implemented", HttpStatus.NOT_IMPLEMENTED),
+
+    // =====================================================================
+    // 6. EXTERNAL SERVICES & INTEGRATIONS (E6xxx)
+    // =====================================================================
+    SMS_SERVICE_ERROR("E6000", "Failed to communicate with the SMS service provider.", HttpStatus.SERVICE_UNAVAILABLE);
 
     private final String code;
     private final String message;
