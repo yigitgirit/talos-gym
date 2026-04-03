@@ -1,5 +1,6 @@
 package com.talosgym.talos_gym.exception;
 
+import com.talosgym.talos_gym.exception.server.RedisException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
  * Global Exception Handler
  * * Strategy:
  * Instead of exposing raw Java stack traces to the client (which is a security risk),
- * we catch exceptions here and return a structured JSON response (ApiError)
+ * we catch exception here and return a structured JSON response (ApiError)
  * with a user-friendly message and the correct HTTP status code.
  */
 @Slf4j
@@ -74,7 +76,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ApiResponse<Void>> handleExpiredJwtException(ExpiredJwtException ex) {
-        log.warn("JWT expired: {}", ex.getMessage());
+        log.warn("JWT expired: {}", Arrays.toString(ex.getStackTrace()));
         ErrorCode errorCode = ErrorCode.TOKEN_EXPIRED;
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, "Token has expired.");
         return buildErrorResponse(errorCode, apiErrorResponse);
@@ -101,7 +103,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleValidationexception(MethodArgumentNotValidException ex) {
         List<ValidationErrorDetail> details = ex.getBindingResult().getAllErrors().stream()
                 .map(error -> {
                     FieldError fieldError = (FieldError) error;
@@ -213,6 +215,14 @@ public class GlobalExceptionHandler {
         // Burada genel bir hata kodu kullanılacak çünkü bilinmedik bir kilit hatası buraya düşecek
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, "The operation could not be completed due to high system load. Please try again.");
+        return buildErrorResponse(errorCode, apiErrorResponse);
+    }
+
+    @ExceptionHandler(RedisException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRedisException(RedisException ex) {
+        log.error("Redis operation failed: {}", ex.getMessage(), ex);
+        ErrorCode errorCode = ex.getErrorCode();
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, ex.getMessage());
         return buildErrorResponse(errorCode, apiErrorResponse);
     }
 

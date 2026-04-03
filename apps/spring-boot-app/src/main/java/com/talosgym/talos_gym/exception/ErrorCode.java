@@ -12,6 +12,8 @@ public enum ErrorCode {
     USER_NOT_FOUND("E1001", "User not found", HttpStatus.NOT_FOUND),
     EMAIL_ALREADY_EXISTS("E1002", "Email already exists", HttpStatus.CONFLICT),
     REFRESH_TOKEN_NOT_FOUND("E1003", "Refresh token not found", HttpStatus.NOT_FOUND),
+    PHONE_NUMBER_ALREADY_EXISTS("E1004", "Phone number already exists", HttpStatus.CONFLICT),
+    USER_NOT_VERIFIED("E1005", "User account has not been verified.", HttpStatus.FORBIDDEN),
 
     // =====================================================================
     // 2. AUTHENTICATION & SECURITY (E2xxx)
@@ -40,12 +42,27 @@ public enum ErrorCode {
     // =====================================================================
     PAYMENT_AMOUNT_MISMATCH("E4016", "Payment amount does not match fine amount.", HttpStatus.BAD_REQUEST),
     PAYMENT_PROCESSING_ERROR("E4017", "Payment is currently being processed by another transaction. Please try again.", HttpStatus.CONFLICT),
+    
+    // =====================================================================
+    // 4.1. BUSINESS LOGIC - VERIFICATION (E41xx)
+    // =====================================================================
+    VERIFICATION_FAILED("E4101", "Verification failed.", HttpStatus.BAD_REQUEST),
+    VERIFICATION_EXPIRED("E4102", "Verification token has expired.", HttpStatus.BAD_REQUEST),
+    VERIFICATION_NOT_FOUND("E4103", "Verification token not found.", HttpStatus.NOT_FOUND),
+    VERIFICATION_ALREADY_COMPLETED("E4104", "Verification has already been completed.", HttpStatus.CONFLICT),
+    
+    // TODO: buraya E41xx serisi kodlar ekleyebilirsin.
 
     // =====================================================================
     // 5. GENERIC SYSTEM ERRORS (E5xxx)
     // =====================================================================
     INTERNAL_SERVER_ERROR("E5000", "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
-    NOT_IMPLEMENTED("E5001", "Feature not implemented", HttpStatus.NOT_IMPLEMENTED);
+    NOT_IMPLEMENTED("E5001", "Feature not implemented", HttpStatus.NOT_IMPLEMENTED),
+
+    // =====================================================================
+    // 6. EXTERNAL SERVICES & INTEGRATIONS (E6xxx)
+    // =====================================================================
+    SMS_SERVICE_ERROR("E6000", "Failed to communicate with the SMS service provider.", HttpStatus.SERVICE_UNAVAILABLE);
 
     private final String code;
     private final String message;
