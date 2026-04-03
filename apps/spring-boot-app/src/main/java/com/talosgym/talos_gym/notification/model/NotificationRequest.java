@@ -1,9 +1,12 @@
 package com.talosgym.talos_gym.notification.model;
 
+
 import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 @Data
 public class NotificationRequest {
@@ -11,7 +14,8 @@ public class NotificationRequest {
     private Long userId;
     private String subject;
     private String message; // Used for SMS or as fallback
-    private NotificationCategory category;
+    private NotificationCategory category; // Used for template selection
+    private Set<NotificationChannel> explicitChannels; // Bypass user preferences if provided
     private Map<String, Object> variables; // Dynamic variables for Thymeleaf templates
 
     // sadece builder erişecek
@@ -21,6 +25,7 @@ public class NotificationRequest {
         this.subject = builder.subject;
         this.message = builder.message;
         this.category = builder.category;
+        this.explicitChannels = builder.explicitChannels;
         this.variables = builder.variables;
     }
 
@@ -34,6 +39,7 @@ public class NotificationRequest {
         private String subject;
         private String message;
         private NotificationCategory category;
+        private Set<NotificationChannel> explicitChannels = new HashSet<>();
         private Map<String, Object> variables = new HashMap<>();
 
         public Builder recipient(String recipient) {
@@ -58,6 +64,11 @@ public class NotificationRequest {
 
         public Builder category(NotificationCategory category) {
             this.category = category;
+            return this;
+        }
+
+        public Builder explicitChannels(Set<NotificationChannel> explicitChannels) {
+            this.explicitChannels = explicitChannels;
             return this;
         }
 
