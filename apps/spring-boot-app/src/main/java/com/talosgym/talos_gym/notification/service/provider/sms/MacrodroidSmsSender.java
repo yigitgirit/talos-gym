@@ -8,6 +8,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.UUID;
 
 @Slf4j
@@ -25,14 +26,15 @@ public class MacrodroidSmsSender implements SmsSender {
     @Override
     public String sendSms(String toPhoneNumber, String messageBody) {
         try {
-            String url = UriComponentsBuilder.fromUriString(webhookUrl)
+            URI uri = UriComponentsBuilder.fromUriString(webhookUrl)
                     .queryParam("phone_number", toPhoneNumber)
                     .queryParam("sms_text", messageBody)
                     .queryParam("secret_token", secretToken)
+                    .build()
                     .encode()
-                    .toUriString();
+                    .toUri();
 
-            restTemplate.getForEntity(url, String.class);
+            restTemplate.getForEntity(uri, String.class);
 
             String messageSid = "MD" + UUID.randomUUID().toString().replace("-", "");
 
@@ -42,7 +44,7 @@ public class MacrodroidSmsSender implements SmsSender {
 
         } catch (RestClientException e) {
             log.error("MacroDroid trigger error while calling webhook: {}", e.getMessage());
-            throw new SmsServiceException("Failed to trigger MacroDroid webhook.");
+            throw new SmsServiceException("Failed to trigger MacroDroid webhook.", e);
         }
     }
 }

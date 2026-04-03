@@ -14,6 +14,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 @Slf4j
 @Component
@@ -40,7 +41,7 @@ public class EmailNotificationStrategy implements NotificationStrategy {
         }
 
         // Determine template based on category
-        String templateName = "email/" + request.getCategory().name().toLowerCase().replace("_", "-");
+        String templateName = "email/" + request.getCategory().name().toLowerCase(Locale.ENGLISH).replace("_", "-");
 
         try {
             String htmlContent = templateEngine.process(templateName, context);
