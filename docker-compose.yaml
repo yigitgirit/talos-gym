@@ -17,6 +17,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  redis:
+    image: redis:alpine
+    restart: always
+    container_name: talosgym-redis
+    ports:
+      - "6379:6379"
   backend:
     build:
       context: ./apps/spring-boot-app
@@ -33,6 +39,8 @@ services:
       - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
     depends_on:
       database:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
