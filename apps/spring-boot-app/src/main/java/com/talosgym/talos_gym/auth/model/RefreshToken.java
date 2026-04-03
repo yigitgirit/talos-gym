@@ -1,33 +1,26 @@
 package com.talosgym.talos_gym.auth.model;
 
 import com.talosgym.talos_gym.common.model.BaseEntity;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import com.talosgym.talos_gym.user.model.User;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
 @Entity
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "refresh_tokens")
+@Setter
 public class RefreshToken extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
-    private String token;
+    @Column(name = "refresh_token")
+    private String refreshToken;
 
-    @Column(nullable = false)
-    private Instant expiryDate;
+    @Column(name = "expired_date")
+    private Instant expiredDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne
     private User user;
 }

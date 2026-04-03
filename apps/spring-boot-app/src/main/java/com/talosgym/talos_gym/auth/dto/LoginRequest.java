@@ -1,11 +1,14 @@
 package com.talosgym.talos_gym.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 
-public record LoginRequest(
-        @NotBlank(message = "Email cannot be blank")
-        String email,
+@Getter
+public class LoginRequest {
 
-        @NotBlank(message = "Password cannot be blank")
-        String password
-) {}
+    @NotBlank(message = "identifier cannot be blank")
+    private String identifier;
+
+    @NotBlank(message = "Password cannot be blank")
+    private String password;
+}
