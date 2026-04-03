@@ -1,45 +1,55 @@
 package com.talosgym.talos_gym.auth.controller;
 
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import com.talosgym.talos_gym.auth.dto.*;
-import com.talosgym.talos_gym.auth.service.AuthService;
+import com.talosgym.talos_gym.auth.service.IAuthService;
 import com.talosgym.talos_gym.common.ApiResponse;
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final IAuthService authService;
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Void> register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
         return ApiResponse.success("User registered successfully. Please login.");
     }
 
     @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        LoginResponse response = authService.login(request);
-        return ApiResponse.success(response);
+        LoginResponse loginResponse = authService.login(request);
+        return ApiResponse.success(loginResponse);
     }
 
     @PostMapping("/refresh")
-    @ResponseStatus(HttpStatus.OK)
     public ApiResponse<RefreshResponse> refresh(@Valid @RequestBody RefreshRequest request) {
-        RefreshResponse response = authService.refresh(request);
-        return ApiResponse.success(response);
+        RefreshResponse refreshResponse = authService.refresh(request);
+        return ApiResponse.success(refreshResponse);
     }
 
     @PostMapping("/logout")
-    @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<Void> logout(@Valid @RequestBody LogoutRequest request) {
-        authService.logout(request);
-        return ApiResponse.success();
+    public ApiResponse<Void> logout(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            String token = headerAuth.substring(7);
+            authService.logout(token);
+            return ApiResponse.success("Successfully logged out");
+        }
+        
+        return ApiResponse.success("Successfully logged out");
+    }
+
+    @PostMapping("/resend-verification")
+    public ApiResponse<Void> resendVerification(@RequestParam String identifier) {
+        authService.resendVerification(identifier);
+        return ApiResponse.success("Verification code resent successfully");
     }
 }

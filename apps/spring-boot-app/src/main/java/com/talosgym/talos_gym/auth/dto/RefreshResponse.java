@@ -1,6 +1,15 @@
 package com.talosgym.talos_gym.auth.dto;
 
-public record RefreshResponse(
-        String accessToken,
-        String refreshToken
-) {}
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class RefreshResponse {
+    private String accessToken;
+    private String refreshToken;
+    @Builder.Default
+    private String tokenType = "Bearer";
+    private Long accessTokenExpiresIn;
+    private Long refreshTokenExpiresIn;
+}
