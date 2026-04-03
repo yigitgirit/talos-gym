@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.talosgym.talos_gym.config.SecurityConfig;
+import com.talosgym.talos_gym.security.config.SecurityConfig;
 import com.talosgym.talos_gym.security.service.JpaUserDetailsService;
 import com.talosgym.talos_gym.security.service.JwtService;
 import org.jspecify.annotations.NonNull;
@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             final String jwt = authHeader.substring(7);
-            final String userId = jwtService.extractSubject(jwt);
+            final String userId = jwtService.extractIdentifier(jwt);
 
             if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 log.debug("JWT token found for user ID: {}. Initializing security context.", userId);
