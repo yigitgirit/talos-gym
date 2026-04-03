@@ -1,5 +1,6 @@
 package com.talosgym.talos_gym.user.dto;
 
+import com.talosgym.talos_gym.user.model.Gender;
 import jakarta.validation.constraints.*;
 import com.talosgym.talos_gym.user.model.Role;
 
@@ -25,5 +26,7 @@ public record UserCreateRequest(
         String lastName,
 
         @NotEmpty(message = "At least one role must be assigned")
-        Set<Role> roles
+        Set<Role> roles,
+
+        Gender gender
 ) {}
