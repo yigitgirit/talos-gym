@@ -8,6 +8,8 @@ import com.talosgym.talos_gym.notification.model.NotificationRequest;
 import com.talosgym.talos_gym.notification.service.provider.sms.SmsSender;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Pattern;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
