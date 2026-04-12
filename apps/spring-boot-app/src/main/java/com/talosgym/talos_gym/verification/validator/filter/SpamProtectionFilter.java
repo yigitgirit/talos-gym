@@ -21,7 +21,11 @@ public class SpamProtectionFilter implements IVerificationFilter {
 
     @Override
     public void validate(VerificationRequest request, User user) {
-        String key = "verification:spam:" + user.getId() + ":" + request.getPurpose();
+        String spamActorIdentifier = (user != null)
+                ? user.getId().toString()
+                : request.getReferenceId();
+
+        String key = "verification:spam:" + spamActorIdentifier + ":" + request.getPurpose();
         
         Long count = redisTemplate.opsForValue().increment(key);
         

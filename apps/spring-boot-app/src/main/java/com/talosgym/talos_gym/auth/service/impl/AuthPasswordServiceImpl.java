@@ -104,7 +104,7 @@ public class AuthPasswordServiceImpl implements IAuthPasswordService {
         verificationService.verify(
                 verifyOtpRequest.getOtpCode(),
                 VerificationType.CODE,
-                user.getId(),
+                user.getId().toString(),
                 VerificationPurpose.PASSWORD_RESET
         );
 

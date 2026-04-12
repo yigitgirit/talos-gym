@@ -7,41 +7,28 @@ import com.talosgym.talos_gym.verification.model.VerificationPurpose;
 import com.talosgym.talos_gym.verification.model.VerificationType;
 import com.talosgym.talos_gym.verification.service.VerificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/verification")
+@RequestMapping("/api/verification")
 @RequiredArgsConstructor
 public class VerificationController {
 
     private final VerificationService verificationService;
 
-//    @PostMapping("/initiate")
-//    public ResponseEntity<Void> initiate(@RequestBody VerificationRequest request) {
-//        // Find user
-//        User user = userDomainService.findUserById(request.getUserId());
-//
-//        // Validate request
-//        filterChainManager.validateForController(request, user);
-//
-//        verificationService.startVerification(request);
-//        return ResponseEntity.ok().build();
-//    }
-
     @PostMapping("/confirm-code")
     public ApiResponse<String> confirmCode(@RequestBody CodeConfirmRequest request) {
         validateConfirmPurpose(request.getPurpose());
-        verificationService.verify(request.getCode(), VerificationType.CODE, request.getUserId(), request.getPurpose());
+        verificationService.verify(request.getCode(), VerificationType.CODE,request.getReferenceId(), request.getPurpose());
         return ApiResponse.success("Kod doğrulandı! Aramıza hoşgeldiniz.");
     }
 
     @GetMapping("/confirm-link")
     public ApiResponse<String> confirmLink(@RequestParam("token") String token,
-                                              @RequestParam("userId") Long userId,
+                                              @RequestParam(value = "referenceId", required = false) String referenceId,
                                               @RequestParam(value = "purpose", defaultValue = "GENERAL") VerificationPurpose purpose) {
         validateConfirmPurpose(purpose);
-        verificationService.verify(token, VerificationType.LINK, userId, purpose);
+        verificationService.verify(token, VerificationType.LINK, referenceId, purpose);
         return ApiResponse.success("Hesap doğrulandı! Aramıza hoşgeldiniz.");
     }
 

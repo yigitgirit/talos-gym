@@ -24,8 +24,11 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationE
 
     Optional<VerificationEntity> findTopByUserIdAndTypeAndPurposeAndConfirmedAtIsNullOrderByExpiresAtDesc(Long userId, VerificationType type, VerificationPurpose purpose);
 
+    Optional<VerificationEntity> findTopByReferenceIdAndTypeAndPurposeAndConfirmedAtIsNullOrderByExpiresAtDesc(String referenceId, VerificationType type, VerificationPurpose purpose);
+
     // Old zombies delete when new token come
     void deleteByUserIdAndTypeAndPurposeAndConfirmedAtIsNull(Long userId, VerificationType type, VerificationPurpose purpose);
+    void deleteByReferenceIdAndTypeAndPurposeAndConfirmedAtIsNull(String referenceId, VerificationType type, VerificationPurpose purpose);
 
     // super duper amazing fantastic query
     @Modifying(clearAutomatically = true)

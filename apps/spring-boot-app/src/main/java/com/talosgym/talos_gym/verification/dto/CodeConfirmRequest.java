@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CodeConfirmRequest {
-    private Long userId;
+    private String referenceId;
     private String code;
     private VerificationPurpose purpose;
 }

@@ -33,7 +33,7 @@ public class CodeVerificationStrategy implements IVerificationStrategy{
     }
 
     @Override
-    public NotificationPayload prepareNotification(Long userId, String secret, NotificationChannel channel, VerificationPurpose purpose) {
+    public NotificationPayload prepareNotification(String referenceId, String secret, NotificationChannel channel, VerificationPurpose purpose) {
         Map<String, Object> variables = Map.of("code", secret);
 
         if (channel == NotificationChannel.EMAIL) {

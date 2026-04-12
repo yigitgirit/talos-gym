@@ -26,6 +26,8 @@ public class UserStatusFilter implements IVerificationFilter {
         VerificationPurpose purpose = request.getPurpose();
         if (purpose == null) return;
 
+        if(user == null) return;
+
         switch (purpose) {
             case EMAIL_VERIFICATION:
                 if (user.getEmailVerificationStatus(emailVerificationValidityDays) == VerificationStatus.VERIFIED){

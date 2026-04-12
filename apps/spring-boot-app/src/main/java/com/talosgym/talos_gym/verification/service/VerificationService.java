@@ -66,8 +66,11 @@ public class VerificationService {
 
     @Transactional
     public void startVerification(VerificationRequest request, String customRecipient) {
-        // Find user
-        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getUserId()));
+        // Find user conditionally
+        User user = null;
+        if (request.getUserId() != null) {
+            user = userRepository.findById(request.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getUserId()));
+        }
 
         // 1. Validate request through filter chain
         filterChainManager.validate(request, user);
@@ -83,11 +86,11 @@ public class VerificationService {
         // Resolve purpose
         VerificationPurpose purpose = request.getPurpose() != null ? request.getPurpose() : VerificationPurpose.GENERAL;
 
-        // Clean up old unconfirmed tokens (zombies) for this specific flow
-        tokenRepository.deleteByUserIdAndTypeAndPurposeAndConfirmedAtIsNull(request.getUserId(), request.getType(), purpose);
-
         // Resolve Reference ID (If specific ID provided use it, otherwise default to userId)
         String referenceId = request.getReferenceId() != null ? request.getReferenceId() : String.valueOf(request.getUserId());
+        
+        // Clean up old unconfirmed tokens (zombies) for this specific flow using referenceId
+        tokenRepository.deleteByReferenceIdAndTypeAndPurposeAndConfirmedAtIsNull(referenceId, request.getType(), purpose);
 
         // Create and save token
         VerificationEntity entity = new VerificationEntity();
@@ -100,7 +103,7 @@ public class VerificationService {
         tokenRepository.save(entity);
 
         // Prepare notification
-        NotificationPayload payload = strategy.prepareNotification(request.getUserId(), rawSecret, request.getChannel(), purpose);
+        NotificationPayload payload = strategy.prepareNotification(referenceId, rawSecret, request.getChannel(), purpose);
         
         // Use custom recipient if provided, otherwise resolve from user
         String recipient = customRecipient != null ? customRecipient : resolveRecipient(request.getChannel(), user);
@@ -123,6 +126,7 @@ public class VerificationService {
     }
 
     private String resolveRecipient(NotificationChannel channel, User user) {
+        if (user == null) return null; // We will rely on customRecipient in this case
         if (channel == NotificationChannel.EMAIL) {
             return user.getEmail();
         }
@@ -130,12 +134,12 @@ public class VerificationService {
     }
 
     @Transactional
-    public VerificationResult verify(String input, VerificationType type, Long userId, VerificationPurpose purpose) {
+    public VerificationResult verify(String input, VerificationType type, String referenceId, VerificationPurpose purpose) {
         IVerificationStrategy strategy = strategyMap.get(type);
         VerificationPurpose searchPurpose = (purpose != null) ? purpose : VerificationPurpose.GENERAL;
 
-        // Find PENDING (unconfirmed) token by userId, verification type AND purpose
-        VerificationEntity entity = tokenRepository.findTopByUserIdAndTypeAndPurposeAndConfirmedAtIsNullOrderByExpiresAtDesc(userId, type, searchPurpose)
+        // Find PENDING (unconfirmed) token by referenceId, verification type AND purpose
+        VerificationEntity entity = tokenRepository.findTopByReferenceIdAndTypeAndPurposeAndConfirmedAtIsNullOrderByExpiresAtDesc(referenceId, type, searchPurpose)
                 .orElseThrow(() -> new VerificationNotFoundException("Verification not found"));
 
         log.warn("Founded verification entity: {}",entity.getId());
