@@ -1,0 +1,121 @@
+package com.talosgym.talos_gym.user.service.impl;
+
+import com.talosgym.talos_gym.auth.repository.RefreshTokenRepository;
+import com.talosgym.talos_gym.common.util.ContactFormatUtil;
+import com.talosgym.talos_gym.exception.ErrorCode;
+import com.talosgym.talos_gym.exception.client.DuplicateResourceException;
+import com.talosgym.talos_gym.exception.client.InvalidInputException;
+import com.talosgym.talos_gym.exception.client.ResourceNotFoundException;
+import com.talosgym.talos_gym.user.model.Role;
+import com.talosgym.talos_gym.user.model.User;
+import com.talosgym.talos_gym.user.model.UserStatus;
+import com.talosgym.talos_gym.user.repository.UserRepository;
+import com.talosgym.talos_gym.user.repository.UserSpecifications;
+import com.talosgym.talos_gym.user.service.IUserDomainService;
+import com.talosgym.talos_gym.user.service.param.CreateUserParams;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class UserDomainServiceImpl implements IUserDomainService {
+
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+
+    @Override
+    public User findUserByIdentifier(String identifier) {
+        if (ContactFormatUtil.isEmail(identifier)) {
+            return userRepository.findByEmail(identifier)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + identifier, ErrorCode.USER_NOT_FOUND));
+
+        } else if (ContactFormatUtil.isPhone(identifier)) {
+            return userRepository.findByPhoneNumber(identifier)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with phone: " + identifier, ErrorCode.USER_NOT_FOUND));
+
+        } else {
+            throw new InvalidInputException("Invalid email/phone format", ErrorCode.INVALID_ARGUMENT_FORMAT);
+        }
+    }
+
+    @Override
+    public User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id, ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    @Transactional
+    public User createNewUser(CreateUserParams params, String encodedPassword) {
+
+        if (userRepository.existsByEmail(params.email())) {
+            throw new DuplicateResourceException("User", "email", params.email(), ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        if (userRepository.existsByPhoneNumber(params.phoneNumber())) {
+            throw new DuplicateResourceException("User", "phoneNumber", params.phoneNumber(), ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
+        }
+
+        return User.builder()
+                .email(params.email())
+                .phoneNumber(params.phoneNumber())
+                .password(encodedPassword)
+                .firstName(params.firstName())
+                .lastName(params.lastName())
+                .gender(params.gender())
+                .roles(Set.of(Role.MEMBER))
+                .status(UserStatus.PENDING)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public Page<User> getAllUsers(Pageable pageable, String search) {
+        Specification<User> spec = UserSpecifications.withSearch(search);
+
+        return userRepository.findAll(spec, pageable);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByPhoneNumber(String phoneNumber) {
+        return userRepository.existsByPhoneNumber(phoneNumber);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUser(User user) {
+        refreshTokenRepository.deleteByUserId(user.getId());
+
+        String timestamp = String.valueOf(System.currentTimeMillis());
+
+        user.setEmail("deleted_" + timestamp + "_" + user.getEmail());
+        user.setPhoneNumber("deleted_" + timestamp + "_" + user.getPhoneNumber());
+
+        user.setFirstName("Deleted User");
+        user.setLastName(timestamp);
+        user.setPassword("password_for_deleted_user");
+        user.setDeleted(true);
+
+        userRepository.save(user);
+
+        log.info("Kullanıcı (ID: {}) anonimleştirilerek soft-delete yapıldı.", user.getId() );
+    }
+}

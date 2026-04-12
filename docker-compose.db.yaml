@@ -18,5 +18,17 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:alpine
+    restart: always
+    container_name: talosgym-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+     test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+     interval: 10s
+     timeout: 5s
+     retries: 5
+
 volumes:
   postgres_data:

@@ -1,56 +1,26 @@
 package com.talosgym.talos_gym.user.mapper;
 
-import com.talosgym.talos_gym.auth.dto.RegisterRequest;
-import com.talosgym.talos_gym.user.dto.*;
+import com.talosgym.talos_gym.user.dto.UserResponse;
 import com.talosgym.talos_gym.user.model.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
+@Component
+public class UserMapper {
 
-    UserDto toUserDto(User user);
+    public UserResponse userToUserResponse(User user){
+        if (user == null) {
+            return null;
+        }
 
-    UserPrivateProfile toUserPrivateProfile(User user);
-
-    UserPublicProfile toUserPublicProfile(User user);
-
-    UserEditProfileResponse toUserEditProfileResponse(User user);
-
-    UserUpdateResponse toUserUpdateResponse(User user);
-
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "notificationPreferences", ignore = true)
-    User toUser(UserDto userDto);
-
-    @Mapping(target = "roles", ignore = true) // Handled in the service layer
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "notificationPreferences", ignore = true)
-    User toUser(RegisterRequest registerRequest);
-
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "notificationPreferences", ignore = true)
-    User toUser(UserCreateRequest request);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "email", ignore = true)
-    @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "notificationPreferences", ignore = true)
-    void updateUserFromEditProfileRequest(UserEditProfileRequest request, @MappingTarget User user);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "notificationPreferences", ignore = true)
-    void updateUserFromRequest(UserUpdateRequest request, @MappingTarget User user);
+        return new UserResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getGender(),
+                user.getRoles(),
+                user.getStatus()
+        );
+    }
 }

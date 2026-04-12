@@ -1,5 +1,6 @@
 package com.talosgym.talos_gym.notification.service.strategy;
 
+import com.talosgym.talos_gym.common.util.ContactFormatUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.talosgym.talos_gym.notification.model.NotificationChannel;
@@ -7,16 +8,12 @@ import com.talosgym.talos_gym.notification.model.NotificationRequest;
 import com.talosgym.talos_gym.notification.service.provider.sms.SmsSender;
 import org.springframework.stereotype.Component;
 
-import java.util.regex.Pattern;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class SmsNotificationStrategy implements NotificationStrategy {
 
     private final SmsSender smsSender;
-
-    private static final Pattern PHONE_PATTERN = Pattern.compile("^\\+?[1-9]\\d{1,14}$");
 
     @Override
     public void send(NotificationRequest request) {
@@ -33,7 +30,7 @@ public class SmsNotificationStrategy implements NotificationStrategy {
         }
 
         phoneNumber = phoneNumber.replaceAll("\\s+", "");
-        if (!PHONE_PATTERN.matcher(phoneNumber).matches()) {
+        if (!ContactFormatUtil.isPhone(phoneNumber)) {
             log.warn("SMS sending cancelled: Invalid phone number format '{}' for User ID: {}", phoneNumber, request.getUserId());
             return;
         }

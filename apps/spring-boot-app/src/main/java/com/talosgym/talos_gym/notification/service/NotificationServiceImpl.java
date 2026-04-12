@@ -1,9 +1,9 @@
 package com.talosgym.talos_gym.notification.service;
 
+import com.talosgym.talos_gym.notification.model.NotificationRequest;
 import lombok.extern.slf4j.Slf4j;
 import com.talosgym.talos_gym.notification.model.NotificationCategory;
 import com.talosgym.talos_gym.notification.model.NotificationChannel;
-import com.talosgym.talos_gym.notification.model.NotificationRequest;
 import com.talosgym.talos_gym.notification.service.strategy.NotificationStrategy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,9 @@ public class NotificationServiceImpl implements NotificationService {
     public void send(NotificationRequest request) {
         try {
             // 1. Determine which channels to use based on User Preferences and Notification Category
-            Set<NotificationChannel> channels = resolveChannels(request.getUserId(), request.getCategory());
+            Set<NotificationChannel> channels = (request.getExplicitChannels() != null && !request.getExplicitChannels().isEmpty())
+                    ? request.getExplicitChannels()
+                    : resolveChannels(request.getUserId(), request.getCategory());
             log.info("Resolved notification channels for User {} and Category {}: {}", request.getUserId(), request.getCategory(), channels);
 
             if (channels.isEmpty()) {
