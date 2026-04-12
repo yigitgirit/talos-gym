@@ -56,20 +56,20 @@ public class AuthServiceImpl implements IAuthService {
 
     @Transactional
     public void register(RegisterRequest request) {
-        if (userDomainService.existsByEmail(request.getEmail())) {
-            throw new DuplicateResourceException("User", "email", request.getEmail(), ErrorCode.EMAIL_ALREADY_EXISTS);
+        if (userDomainService.existsByEmail(request.email())) {
+            throw new DuplicateResourceException("User", "email", request.email(), ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        if (userDomainService.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new DuplicateResourceException("User", "phoneNumber", request.getPhoneNumber(), ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
+        if (userDomainService.existsByPhoneNumber(request.phoneNumber())) {
+            throw new DuplicateResourceException("User", "phoneNumber", request.phoneNumber(), ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
         }
 
         PendingUser pendingUser = PendingUser.builder()
-                .phoneNumber(request.getPhoneNumber())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .gender(request.getGender())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .phoneNumber(request.phoneNumber())
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .email(request.email())
+                .gender(request.gender())
+                .password(passwordEncoder.encode(request.password()))
                 .ttl(pendingUserTtlMinutes)
                 .build();
 
@@ -80,11 +80,11 @@ public class AuthServiceImpl implements IAuthService {
                 VerificationType.CODE,
                 NotificationChannel.SMS,
                 VerificationPurpose.PHONE_VERIFICATION,
-                request.getPhoneNumber()
+                request.phoneNumber()
         );
-        verificationService.startVerification(verificationRequest, request.getPhoneNumber());
+        verificationService.startVerification(verificationRequest, request.phoneNumber());
 
-        log.info("Pending registration created and SMS sent for: {}", request.getPhoneNumber());
+        log.info("Pending registration created and SMS sent for: {}", request.phoneNumber());
     }
 
     @Override
@@ -114,11 +114,11 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-        log.info("Login request received for identifier: {}", loginRequest.getIdentifier());
+        log.info("Login request received for identifier: {}", loginRequest.identifier());
 
-        User user = userDomainService.findUserByIdentifier(loginRequest.getIdentifier());
+        User user = userDomainService.findUserByIdentifier(loginRequest.identifier());
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email/phone or password");
         }
 
@@ -132,6 +132,7 @@ public class AuthServiceImpl implements IAuthService {
         return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(savedRefreshToken.getRefreshToken())
+                .tokenType("Bearer")
                 .accessTokenExpiresIn(securityProperties.getAccessToken().getExpiration())
                 .refreshTokenExpiresIn(securityProperties.getRefreshToken().getExpiration())
                 .build();
@@ -143,14 +144,14 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public RefreshResponse refresh(RefreshRequest refreshRequest) {
-        Optional<RefreshToken> optRefreshToken = refreshTokenRepository.findByRefreshToken(refreshRequest.getRefreshToken());
+        Optional<RefreshToken> optRefreshToken = refreshTokenRepository.findByRefreshToken(refreshRequest.refreshToken());
 
         if (optRefreshToken.isEmpty()){
-            throw  new InvalidTokenException("Refresh token not found: " + refreshRequest.getRefreshToken());
+            throw  new InvalidTokenException("Refresh token not found: " + refreshRequest.refreshToken());
         }
         if (!isValidRefreshToken(optRefreshToken.get().getExpiredDate())){
             refreshTokenRepository.delete(optRefreshToken.get()); // Expired token should be deleted
-            throw new ExpiredTokenException("Refresh token has expired: " + refreshRequest.getRefreshToken());
+            throw new ExpiredTokenException("Refresh token has expired: " + refreshRequest.refreshToken());
         }
 
         User user = optRefreshToken.get().getUser();
@@ -164,6 +165,7 @@ public class AuthServiceImpl implements IAuthService {
         return RefreshResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(newRefreshToken.getRefreshToken())
+                .tokenType("Bearer")
                 .accessTokenExpiresIn(securityProperties.getAccessToken().getExpiration())
                 .refreshTokenExpiresIn(securityProperties.getRefreshToken().getExpiration())
                 .build();

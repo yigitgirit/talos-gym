@@ -18,8 +18,8 @@ public class VerificationController {
 
     @PostMapping("/confirm-code")
     public ApiResponse<String> confirmCode(@RequestBody CodeConfirmRequest request) {
-        validateConfirmPurpose(request.getPurpose());
-        verificationService.verify(request.getCode(), VerificationType.CODE,request.getReferenceId(), request.getPurpose());
+        validateConfirmPurpose(request.purpose());
+        verificationService.verify(request.code(), VerificationType.CODE,request.referenceId(), request.purpose());
         return ApiResponse.success("Kod doğrulandı! Aramıza hoşgeldiniz.");
     }
 

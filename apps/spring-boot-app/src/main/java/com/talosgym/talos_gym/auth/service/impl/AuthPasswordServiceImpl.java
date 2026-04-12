@@ -97,12 +97,12 @@ public class AuthPasswordServiceImpl implements IAuthPasswordService {
     @Override
     @Transactional(noRollbackFor = {InvalidInputException.class})
     public String verifyOTP(VerifyOtpRequest verifyOtpRequest) {
-        log.info("Verifying OTP for phone number: {}", verifyOtpRequest.getPhoneNumber());
+        log.info("Verifying OTP for phone number: {}", verifyOtpRequest.phoneNumber());
 
-        User user = userDomainService.findUserByIdentifier(verifyOtpRequest.getPhoneNumber());
+        User user = userDomainService.findUserByIdentifier(verifyOtpRequest.phoneNumber());
 
         verificationService.verify(
-                verifyOtpRequest.getOtpCode(),
+                verifyOtpRequest.otpCode(),
                 VerificationType.CODE,
                 user.getId().toString(),
                 VerificationPurpose.PASSWORD_RESET
@@ -125,9 +125,9 @@ public class AuthPasswordServiceImpl implements IAuthPasswordService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        log.warn("Resetting password for token: {}", resetPasswordRequest.getResetToken());
+        log.warn("Resetting password for token: {}", resetPasswordRequest.resetToken());
 
-        PasswordResetToken resetToken = tokenRepository.findByToken(resetPasswordRequest.getResetToken())
+        PasswordResetToken resetToken = tokenRepository.findByToken(resetPasswordRequest.resetToken())
                 .orElseThrow(() -> new InvalidTokenException("Invalid password reset token"));
 
         if (resetToken.isExpired()) {
@@ -135,12 +135,12 @@ public class AuthPasswordServiceImpl implements IAuthPasswordService {
             throw new ExpiredTokenException("Password reset token has expired");
         }
 
-        if (!resetPasswordRequest.getNewPassword().equals(resetPasswordRequest.getConfirmNewPassword())){
+        if (!resetPasswordRequest.newPassword().equals(resetPasswordRequest.confirmNewPassword())){
             throw new PasswordMismatchException();
         }
 
         User user = resetToken.getUser();
-        user.setPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword()));
+        user.setPassword(passwordEncoder.encode(resetPasswordRequest.newPassword()));
         userRepository.save(user);
 
         tokenRepository.delete(resetToken);

@@ -21,7 +21,7 @@ public class AuthPasswordController {
 
     @PostMapping("/forgot-password")
     public ApiResponse<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        authService.forgotPassword(forgotPasswordRequest.getPhoneNumber());
+        authService.forgotPassword(forgotPasswordRequest.phoneNumber());
         return ApiResponse.success("Eğer numara sistemimize kayıtlıysa, telefonunuza doğrulama kodu gönderilmiştir.");
     }
 
