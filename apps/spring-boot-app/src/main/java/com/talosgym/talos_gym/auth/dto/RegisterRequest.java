@@ -36,6 +36,4 @@ public class RegisterRequest {
     private String lastName;
 
     private Gender gender;
-
-    private String address;
 }

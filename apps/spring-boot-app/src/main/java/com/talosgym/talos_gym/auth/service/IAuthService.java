@@ -6,6 +6,8 @@ public interface IAuthService {
 
     void register(RegisterRequest registerRequest);
 
+    void completePendingRegistration(String referenceId);
+
     LoginResponse login(LoginRequest loginRequest);
 
     RefreshResponse refresh(RefreshRequest refreshRequest);

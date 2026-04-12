@@ -1,20 +1,24 @@
 package com.talosgym.talos_gym.auth.service.impl;
 
 import com.talosgym.talos_gym.auth.dto.*;
+import com.talosgym.talos_gym.auth.model.PendingUser;
 import com.talosgym.talos_gym.auth.model.RefreshToken;
 import com.talosgym.talos_gym.auth.model.SecurityUser;
+import com.talosgym.talos_gym.auth.repository.PendingUserRepository;
 import com.talosgym.talos_gym.auth.repository.RefreshTokenRepository;
 import com.talosgym.talos_gym.auth.service.IAuthService;
 import com.talosgym.talos_gym.auth.service.TokenBlacklistService;
+import com.talosgym.talos_gym.exception.ErrorCode;
 import com.talosgym.talos_gym.exception.auth.*;
+import com.talosgym.talos_gym.exception.client.DuplicateResourceException;
 import com.talosgym.talos_gym.notification.model.NotificationChannel;
 import com.talosgym.talos_gym.config.SecurityProperties;
 import com.talosgym.talos_gym.security.service.JwtService;
 import com.talosgym.talos_gym.user.model.User;
 import com.talosgym.talos_gym.user.model.UserStatus;
 import com.talosgym.talos_gym.user.model.VerificationStatus;
-import com.talosgym.talos_gym.user.service.param.CreateUserParams;
 import com.talosgym.talos_gym.user.service.IUserDomainService;
+import com.talosgym.talos_gym.user.service.param.CreateUserParams;
 import com.talosgym.talos_gym.verification.model.VerificationPurpose;
 import com.talosgym.talos_gym.verification.model.VerificationRequest;
 import com.talosgym.talos_gym.verification.model.VerificationType;
@@ -23,6 +27,7 @@ import com.talosgym.talos_gym.exception.client.InvalidInputException;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,52 +49,79 @@ public class AuthServiceImpl implements IAuthService {
     private final JwtService jwtService;
     private final TokenBlacklistService blacklistService;
     private final SecurityProperties securityProperties;
+    private final PendingUserRepository pendingUserRepository;
 
-    @Override
+    @Value("${application.auth.pending-user.ttl-minutes:15}")
+    private long pendingUserTtlMinutes;
+
     @Transactional
     public void register(RegisterRequest request) {
-        log.info("Registering new user with email: {}", request.getEmail());
+        if (userDomainService.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("User", "email", request.getEmail(), ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        if (userDomainService.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new DuplicateResourceException("User", "phoneNumber", request.getPhoneNumber(), ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
+        }
 
-        CreateUserParams createUserParams = new CreateUserParams(
-                request.getEmail(),
-                request.getPhoneNumber(),
-                request.getFirstName(),
-                request.getLastName(),
-                request.getGender());
+        PendingUser pendingUser = PendingUser.builder()
+                .phoneNumber(request.getPhoneNumber())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .gender(request.getGender())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .ttl(pendingUserTtlMinutes)
+                .build();
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        pendingUserRepository.save(pendingUser);
 
-        // 1. Create and save User via UserDomainService
-        User user = userDomainService.createNewUser(createUserParams,encodedPassword);
-        user = userDomainService.saveUser(user);
-
-        // 2. Start Verification (SMS)
         VerificationRequest verificationRequest = new VerificationRequest(
-                user.getId(),
+                null,
                 VerificationType.CODE,
                 NotificationChannel.SMS,
                 VerificationPurpose.PHONE_VERIFICATION,
-                null
+                request.getPhoneNumber()
+        );
+        verificationService.startVerification(verificationRequest, request.getPhoneNumber());
+
+        log.info("Pending registration created and SMS sent for: {}", request.getPhoneNumber());
+    }
+
+    @Override
+    @Transactional
+    public void completePendingRegistration(String referenceId) {
+        PendingUser pendingUser = pendingUserRepository.findById(referenceId)
+                .orElseThrow(() -> new IllegalStateException("Pending user not found."));
+
+        CreateUserParams params = new CreateUserParams(
+                pendingUser.getEmail(),
+                pendingUser.getPhoneNumber(),
+                pendingUser.getFirstName(),
+                pendingUser.getLastName(),
+                pendingUser.getGender()
         );
 
-        verificationService.startVerification(verificationRequest);
+        User user = userDomainService.createNewUser(params, pendingUser.getPassword());
+        user.setPhoneVerifiedAt(Instant.now());
+        user.setStatus(UserStatus.ACTIVE);
 
-        log.info("User registered successfully. Verification SMS sent to: {}", request.getPhoneNumber());
+        userDomainService.saveUser(user);
+
+        pendingUserRepository.delete(pendingUser);
+
+        log.info("Pending registration completed for: {}", user.getId());
     }
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         log.info("Login request received for identifier: {}", loginRequest.getIdentifier());
 
-        // 1. Find User (Email or Phone)
         User user = userDomainService.findUserByIdentifier(loginRequest.getIdentifier());
 
-        // 2. Check Password
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email/phone or password");
         }
 
-        // 3. Generate Tokens
         SecurityUser securityUser = new SecurityUser(user);
 
         String accessToken = jwtService.generateToken(generateUserClaims(securityUser), securityUser);
@@ -121,13 +153,11 @@ public class AuthServiceImpl implements IAuthService {
             throw new ExpiredTokenException("Refresh token has expired: " + refreshRequest.getRefreshToken());
         }
 
-        // Generate new access token
         User user = optRefreshToken.get().getUser();
         SecurityUser securityUser = new SecurityUser(user);
 
         String accessToken = jwtService.generateToken(generateUserClaims(securityUser), securityUser);
 
-        // Delete old refresh token and create a new one
         refreshTokenRepository.delete(optRefreshToken.get());
         RefreshToken newRefreshToken = refreshTokenRepository.save(createRefreshToken(user));
 
@@ -164,7 +194,6 @@ public class AuthServiceImpl implements IAuthService {
         if(user.getPhoneVerificationStatus(securityProperties.getPhoneVerificationValidityDays()) != VerificationStatus.NOT_VERIFIED){
             throw new InvalidInputException("User phone is already verified.");        }
 
-        // Start Verification (SMS)
         VerificationRequest verificationRequest = new VerificationRequest(
                 user.getId(),
                 VerificationType.CODE,

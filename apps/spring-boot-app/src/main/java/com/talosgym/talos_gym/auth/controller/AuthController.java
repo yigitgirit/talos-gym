@@ -19,7 +19,7 @@ public class AuthController {
     @PostMapping("/register")
     public ApiResponse<Void> register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
-        return ApiResponse.success("User registered successfully. Please login.");
+        return ApiResponse.success("Verification code send successfully. Please check your phone.");
     }
 
     @PostMapping("/login")

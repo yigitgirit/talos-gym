@@ -1,5 +1,6 @@
 package com.talosgym.talos_gym.user.listener;
 
+import com.talosgym.talos_gym.auth.service.IAuthService;
 import com.talosgym.talos_gym.user.model.User;
 import com.talosgym.talos_gym.user.model.UserStatus;
 import com.talosgym.talos_gym.user.service.IUserDomainService;
@@ -17,28 +18,31 @@ import java.time.Instant;
 @Component
 @RequiredArgsConstructor
 public class UserVerificationListener {
-
     private final IUserDomainService userDomainService;
-
     private final IUserService userService;
+    private final IAuthService authService;
 
     @EventListener(condition = "#event.purpose.name() == 'PHONE_VERIFICATION'")
     @Transactional
     public void onPhoneVerification(VerificationCompletedEvent event) {
-        log.info("Handling PHONE_VERIFICATION for User ID: {}", event.getUserId());
+        if (event.getUserId() != null) {
+            log.info("Handling PHONE_VERIFICATION for existing User ID: {}", event.getUserId());
+            User user = userDomainService.findUserById(event.getUserId());
+            user.setPhoneVerifiedAt(Instant.now());
 
-        User user = userDomainService.findUserById(event.getUserId());
+            if (user.getStatus() == UserStatus.PENDING) {
+                user.setStatus(UserStatus.ACTIVE);
+                log.info("User ID: {} activated after phone verification.", user.getId());
+            }
+            userDomainService.saveUser(user);
+            log.info("User ID: {} phone number verified successfully.", user.getId());
 
-        user.setPhoneVerifiedAt(Instant.now());
-
-        // for PostRegister flow
-        if (user.getStatus() == UserStatus.PENDING) {
-            user.setStatus(UserStatus.ACTIVE);
-            log.info("User ID: {} activated after phone verification.", user.getId());
+        } else if (event.getReferenceId() != null) {
+            log.info("Handling PHONE_VERIFICATION for Pending User (Reference/Phone): {}", event.getReferenceId());
+            authService.completePendingRegistration(event.getReferenceId());
+        } else {
+            log.warn("PHONE_VERIFICATION event received with neither userId nor referenceId!");
         }
-
-        userDomainService.saveUser(user);
-        log.info("User ID: {} phone number verified successfully.", user.getId());
     }
 
     @EventListener(condition = "#event.purpose.name() == 'EMAIL_VERIFICATION'")
