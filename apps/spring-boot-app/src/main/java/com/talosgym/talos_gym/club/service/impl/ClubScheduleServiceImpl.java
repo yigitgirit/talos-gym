@@ -33,7 +33,7 @@ public class ClubScheduleServiceImpl implements IClubScheduleService {
     @Override
     @Transactional(readOnly = true)
     public List<OperatingHourDto> getOperatingHours(Long clubId) {
-        clubRepository.findById(clubId).orElseThrow(() -> new ResourceNotFoundException("Club not found with id: " +clubId, ErrorCode.RESOURCE_NOT_FOUND));
+        findClubByIdOrThrow(clubId);
 
         List<ClubOperatingHour> operatingHours = scheduleDomainService.getOperatingHoursByClubId(clubId);
         return operatingHours.stream().map(mapper::toOperatingHourDto).toList();
@@ -72,8 +72,7 @@ public class ClubScheduleServiceImpl implements IClubScheduleService {
     @Override
     @Transactional
     public ScheduleOverrideResponse createOverride(Long clubId, ScheduleOverrideRequest request, Long ownerId) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new ResourceNotFoundException("Club not found with id: " + clubId, ErrorCode.RESOURCE_NOT_FOUND));
+        Club club = findClubByIdOrThrow(clubId);
 
         scheduleDomainService.validateTimes(request.isClosed(), request.openTime(), request.closeTime());
 
@@ -93,8 +92,7 @@ public class ClubScheduleServiceImpl implements IClubScheduleService {
     @Transactional
     public ScheduleOverrideResponse updateOverride(Long clubId, Long overrideId, ScheduleOverrideRequest request, Long ownerId) {
 
-        clubRepository.findById(clubId)
-                .orElseThrow(() -> new ResourceNotFoundException("Club not found with id: " + clubId, ErrorCode.RESOURCE_NOT_FOUND));
+        findClubByIdOrThrow(clubId);
 
         ClubScheduleOverride existingOverride = scheduleDomainService.getOverrideByIdAndClubId(overrideId, clubId);
 
@@ -109,8 +107,7 @@ public class ClubScheduleServiceImpl implements IClubScheduleService {
     @Override
     @Transactional
     public void deleteOverride(Long clubId, Long overrideId, Long ownerId) {
-        clubRepository.findById(clubId)
-                .orElseThrow(() -> new ResourceNotFoundException("Club not found with id: " + clubId, ErrorCode.RESOURCE_NOT_FOUND));
+        findClubByIdOrThrow(clubId);
 
         ClubScheduleOverride override = scheduleDomainService.getOverrideByIdAndClubId(overrideId, clubId);
         scheduleDomainService.deleteOverride(override);
@@ -119,9 +116,14 @@ public class ClubScheduleServiceImpl implements IClubScheduleService {
     @Override
     @Transactional(readOnly = true)
     public List<ScheduleOverrideResponse> getOverridesInDateRange(Long clubId, LocalDate startDate, LocalDate endDate) {
-        clubRepository.findById(clubId)
-                .orElseThrow(() -> new ResourceNotFoundException("Club not found with id: " + clubId, ErrorCode.RESOURCE_NOT_FOUND));
+        findClubByIdOrThrow(clubId);
+
         List<ClubScheduleOverride> overrides = scheduleDomainService.getOverridesByClubIdAndDateRange(clubId, startDate, endDate);
         return overrides.stream().map(mapper::toOverrideResponse).toList();
+    }
+
+    private Club findClubByIdOrThrow(Long id) {
+        return clubRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Club not found with id: " + id, ErrorCode.RESOURCE_NOT_FOUND));
     }
 }

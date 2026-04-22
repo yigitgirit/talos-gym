@@ -1,5 +1,6 @@
 package com.talosgym.talos_gym.club.dto;
 
+import com.talosgym.talos_gym.common.validator.ValidTimeZone;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -10,7 +11,7 @@ public record ClubCreateRequest(
         @Pattern(regexp = "^[a-z0-9-]+$", message = "Slug can only contain lowercase letters, numbers, and hyphens") @Size(max = 100)
         String slug,
         @NotNull AddressDto address,
-        @NotBlank String timeZone,
+        @NotBlank @ValidTimeZone String timeZone,
         String description,
         @NotNull Double scoreMultiplier
 ) {}
