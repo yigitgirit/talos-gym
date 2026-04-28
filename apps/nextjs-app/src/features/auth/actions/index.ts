@@ -29,7 +29,7 @@ export async function loginAsync(input: LoginRequest) {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
-      maxAge: tokens.accessTokenExpiresIn || COOKIE_OPTIONS.accessTokenMaxAge,
+      maxAge: tokens.accessTokenExpiresIn ? Math.floor(tokens.accessTokenExpiresIn / 1000) : COOKIE_OPTIONS.accessTokenMaxAge,
       secure: process.env.NODE_ENV === 'production',
     })
 
@@ -37,7 +37,7 @@ export async function loginAsync(input: LoginRequest) {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
-      maxAge: tokens.refreshTokenExpiresIn || COOKIE_OPTIONS.refreshTokenMaxAge,
+      maxAge: tokens.refreshTokenExpiresIn ? Math.floor(tokens.refreshTokenExpiresIn / 1000) : COOKIE_OPTIONS.refreshTokenMaxAge,
       secure: process.env.NODE_ENV === 'production',
     })
 
