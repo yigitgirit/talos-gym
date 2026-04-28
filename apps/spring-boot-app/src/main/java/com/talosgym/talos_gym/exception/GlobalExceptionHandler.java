@@ -8,7 +8,6 @@ import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import com.talosgym.talos_gym.common.ApiResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
@@ -42,20 +41,20 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Yardımı metod
-    private ResponseEntity<ApiResponse<Void>> buildErrorResponse(ErrorCode errorCode, ApiErrorResponse apiErrorResponse) {
-        return new ResponseEntity<>(ApiResponse.failure(apiErrorResponse), errorCode.getHttpStatus());
+    // Helper method
+    private ResponseEntity<ApiErrorResponse> buildErrorResponse(ErrorCode errorCode, ApiErrorResponse apiErrorResponse) {
+        return new ResponseEntity<>(apiErrorResponse, errorCode.getHttpStatus());
     }
 
     @ExceptionHandler(BaseApiException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBaseApiException(BaseApiException ex) {
+    public ResponseEntity<ApiErrorResponse> handleBaseApiException(BaseApiException ex) {
         ErrorCode errorCode = ex.getErrorCode();
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, ex.getMessage());
         return buildErrorResponse(errorCode, apiErrorResponse);
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(AuthenticationException ex) {
+    public ResponseEntity<ApiErrorResponse> handleAuthenticationException(AuthenticationException ex) {
         log.warn("Authentication failed: {}", ex.getMessage());
         ErrorCode errorCode = (ex instanceof BadCredentialsException)
                 ? ErrorCode.INVALID_CREDENTIALS
@@ -66,7 +65,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
         String detail = String.format("You do not have permission to access this resource: %s", request.getRequestURI());
         log.warn("Access denied: {}", request.getRequestURI());
         ErrorCode errorCode = ErrorCode.FORBIDDEN;
@@ -75,7 +74,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ApiResponse<Void>> handleExpiredJwtException(ExpiredJwtException ex) {
+    public ResponseEntity<ApiErrorResponse> handleExpiredJwtException(ExpiredJwtException ex) {
         log.warn("JWT expired: {}", Arrays.toString(ex.getStackTrace()));
         ErrorCode errorCode = ErrorCode.TOKEN_EXPIRED;
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, "Token has expired.");
@@ -87,7 +86,7 @@ public class GlobalExceptionHandler {
             SignatureException.class,
             UnsupportedJwtException.class
     })
-    public ResponseEntity<ApiResponse<Void>> handleInvalidJwtException(Exception ex) {
+    public ResponseEntity<ApiErrorResponse> handleInvalidJwtException(Exception ex) {
         log.warn("Invalid JWT: {}", ex.getMessage());
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, "Invalid token.");
@@ -95,7 +94,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("Illegal argument: {}", ex.getMessage());
         ErrorCode errorCode = ErrorCode.VALIDATION_ERROR;
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, ex.getMessage());
@@ -103,7 +102,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidationexception(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         List<ValidationErrorDetail> details = ex.getBindingResult().getAllErrors().stream()
                 .map(error -> {
                     FieldError fieldError = (FieldError) error;
@@ -118,7 +117,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         log.warn("Malformed JSON request: {}", ex.getMessage());
         ErrorCode errorCode = ErrorCode.MALFORMED_REQUEST;
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode);
@@ -126,7 +125,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleConstraintViolationException(ConstraintViolationException ex) {
+    public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         List<String> details = ex.getConstraintViolations().stream()
                 .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
                 .collect(Collectors.toList());
@@ -139,7 +138,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String detail = String.format("Parameter '%s' should be of type '%s'",
                 ex.getName(),
                 ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown");
@@ -152,7 +151,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
+    public ResponseEntity<ApiErrorResponse> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
         String detail = String.format("Missing required parameter: '%s'", ex.getParameterName());
         log.warn("Missing parameter: {}", detail);
 
@@ -162,7 +161,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+    public ResponseEntity<ApiErrorResponse> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         String detail = String.format("Method '%s' is not supported. Supported methods: %s",
                 ex.getMethod(), ex.getSupportedHttpMethods());
         log.warn("Method not allowed: {}", ex.getMethod());
@@ -173,7 +172,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
+    public ResponseEntity<ApiErrorResponse> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
         String detail = String.format("Media type '%s' is not supported. Supported types: %s",
                 ex.getContentType(), ex.getSupportedMediaTypes());
         log.warn("Unsupported media type: {}", ex.getContentType());
@@ -184,7 +183,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         log.warn("Database integrity violation: {}", ex.getMessage());
         ErrorCode errorCode = ErrorCode.DATA_INTEGRITY_VIOLATION;
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode);
@@ -192,7 +191,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException ex) {
+    public ResponseEntity<ApiErrorResponse> handleNoResourceFound(NoResourceFoundException ex) {
         String detail = String.format("Resource not found: '%s'", ex.getResourcePath());
         log.warn("Resource not found: {}", ex.getMessage());
         ErrorCode errorCode = ErrorCode.ENDPOINT_NOT_FOUND;
@@ -201,7 +200,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
-    public ResponseEntity<ApiResponse<Void>> handleOptimisticLock(ObjectOptimisticLockingFailureException ex) {
+    public ResponseEntity<ApiErrorResponse> handleOptimisticLock(ObjectOptimisticLockingFailureException ex) {
         String detail = String.format("The resource has been modified by another user, please refresh and try again: '%s'", ex.getMessage());
         log.warn("Optimistic lock failed: {}", ex.getMessage());
         ErrorCode errorCode = ErrorCode.DATA_INTEGRITY_VIOLATION;
@@ -210,7 +209,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PessimisticLockingFailureException.class)
-    public ResponseEntity<ApiResponse<Void>> handlePessimisticLock(PessimisticLockingFailureException ex) {
+    public ResponseEntity<ApiErrorResponse> handlePessimisticLock(PessimisticLockingFailureException ex) {
         log.warn("Pessimistic lock failed: {}", ex.getMessage());
         // Burada genel bir hata kodu kullanılacak çünkü bilinmedik bir kilit hatası buraya düşecek
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
@@ -219,7 +218,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RedisException.class)
-    public ResponseEntity<ApiResponse<Void>> handleRedisException(RedisException ex) {
+    public ResponseEntity<ApiErrorResponse> handleRedisException(RedisException ex) {
         log.error("Redis operation failed: {}", ex.getMessage(), ex);
         ErrorCode errorCode = ex.getErrorCode();
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, ex.getMessage());
@@ -227,7 +226,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UnsupportedOperationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUnsupportedOperationException(UnsupportedOperationException ex) {
+    public ResponseEntity<ApiErrorResponse> handleUnsupportedOperationException(UnsupportedOperationException ex) {
         log.warn("Unsupported operation: {}", ex.getMessage());
         ErrorCode errorCode = ErrorCode.NOT_IMPLEMENTED;
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, ex.getMessage());
@@ -235,7 +234,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGlobalException(Exception ex) {
+    public ResponseEntity<ApiErrorResponse> handleGlobalException(Exception ex) {
         log.error("An unexpected error occurred", ex);
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode);

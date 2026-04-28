@@ -2,7 +2,6 @@ package com.talosgym.talos_gym.notification.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import com.talosgym.talos_gym.common.ApiResponse;
 import com.talosgym.talos_gym.notification.dto.UpdateNotificationPreferenceRequest;
 import com.talosgym.talos_gym.notification.dto.UserNotificationPreferenceDto;
 import com.talosgym.talos_gym.notification.service.UserNotificationPreferenceService;
@@ -19,16 +18,13 @@ public class NotificationPreferenceController {
     private final UserNotificationPreferenceService preferenceService;
 
     @GetMapping
-    public ApiResponse<List<UserNotificationPreferenceDto>> getMyPreferences() {
-        List<UserNotificationPreferenceDto> preferences = preferenceService.getUserPreferences(SecurityUtils.getCurrentUserId());
-        return ApiResponse.success(preferences);
+    public List<UserNotificationPreferenceDto> getMyPreferences() {
+        return preferenceService.getUserPreferences(SecurityUtils.getCurrentUserId());
     }
 
     @PutMapping
-    public ApiResponse<UserNotificationPreferenceDto> updatePreference(
+    public UserNotificationPreferenceDto updatePreference(
             @Valid @RequestBody UpdateNotificationPreferenceRequest request) {
-        
-        UserNotificationPreferenceDto updatedPreference = preferenceService.updatePreference(SecurityUtils.getCurrentUserId(), request);
-        return ApiResponse.success(updatedPreference);
+        return preferenceService.updatePreference(SecurityUtils.getCurrentUserId(), request);
     }
 }
