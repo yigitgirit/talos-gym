@@ -9,6 +9,7 @@ import com.talosgym.talos_gym.exception.client.ResourceNotFoundException;
 import com.talosgym.talos_gym.user.model.Role;
 import com.talosgym.talos_gym.user.model.User;
 import com.talosgym.talos_gym.user.model.UserStatus;
+import com.talosgym.talos_gym.user.model.VerificationStatus;
 import com.talosgym.talos_gym.user.repository.UserRepository;
 import com.talosgym.talos_gym.user.repository.UserSpecifications;
 import com.talosgym.talos_gym.user.service.IUserDomainService;
@@ -21,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
 import java.util.Set;
 
 @Service
@@ -44,6 +46,24 @@ public class UserDomainServiceImpl implements IUserDomainService {
 
         } else {
             throw new InvalidInputException("Invalid email/phone format", ErrorCode.INVALID_ARGUMENT_FORMAT);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void validateAndReclaimEmail(String email, long validityDays) {
+        if (userRepository.existsByEmail(email)) {
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email, ErrorCode.USER_NOT_FOUND));
+
+            VerificationStatus emailVerificationStatus = user.getEmailVerificationStatus(validityDays);
+            if (emailVerificationStatus == VerificationStatus.VERIFIED) {
+                throw new DuplicateResourceException("User", "email", email, ErrorCode.EMAIL_ALREADY_EXISTS);
+            }
+
+            String dummyEmail = "reclaimed_" + UUID.randomUUID() + "@talosgym.local";
+            user.setEmail(dummyEmail);
+            userRepository.save(user);
         }
     }
 
