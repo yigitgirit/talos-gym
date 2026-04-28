@@ -1,12 +1,12 @@
 package com.talosgym.talos_gym.user.controller;
 
-import com.talosgym.talos_gym.common.ApiResponse;
 import com.talosgym.talos_gym.security.utils.SecurityUtils;
 import com.talosgym.talos_gym.user.dto.*;
 import com.talosgym.talos_gym.user.service.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,44 +18,42 @@ public class UserController {
     private final IUserService userService;
 
     @GetMapping("/me")
-    public ApiResponse<UserResponse> getMyProfile() {
-        UserResponse userResponse = userService .getUserById(SecurityUtils.getCurrentUserId());
-        return ApiResponse.success(userResponse);
+    public UserResponse getMyProfile() {
+        return userService.getUserById(SecurityUtils.getCurrentUserId());
     }
 
     @PutMapping("/me")
-    public ApiResponse<UserResponse> editMyProfile(@Valid @RequestBody UpdateUserRequest request) {
-        UserResponse updatedUser = userService.updateUserProfile(SecurityUtils.getCurrentUserId(),request);
-        return ApiResponse.success(updatedUser);
+    public UserResponse editMyProfile(@Valid @RequestBody UpdateUserRequest request) {
+        return userService.updateUserProfile(SecurityUtils.getCurrentUserId(),request);
     }
 
     @PatchMapping("/me/change-password")
-    public ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         userService.changePassword(SecurityUtils.getCurrentUserId(),request);
-        return ApiResponse.success();
     }
 
     @PostMapping("/phone/change-request")
-    public ApiResponse<Void> initiatePhoneChange(@Valid @RequestBody PhoneChangeInitiateRequest request) {
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void initiatePhoneChange(@Valid @RequestBody PhoneChangeInitiateRequest request) {
         userService.initiatePhoneChange(SecurityUtils.getCurrentUserId(), request);
-        return ApiResponse.success();
     }
 
     @PostMapping("/email/change-request")
-    public ApiResponse<Void> initiateEmailChange(@Valid @RequestBody EmailChangeInitiateRequest request) {
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void initiateEmailChange(@Valid @RequestBody EmailChangeInitiateRequest request) {
         userService.initiateEmailChange(SecurityUtils.getCurrentUserId(), request);
-        return ApiResponse.success();
     }
 
     @PostMapping("/me/verify-email")
-    public ApiResponse<Void> initiateEmailVerification() {
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void initiateEmailVerification() {
         userService.initiateEmailVerification(SecurityUtils.getCurrentUserId());
-        return ApiResponse.success("Email verification link sent successfully");
     }
 
     @DeleteMapping("/me")
-    public ApiResponse<Void> deleteMyAccount() {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMyAccount() {
         userService.deleteUser(SecurityUtils.getCurrentUserId());
-        return ApiResponse.success();
     }
 }
