@@ -1,0 +1,42 @@
+# This file prevents build artifacts, local config, and sensitive files
+# from being sent to the Docker daemon during the build process.
+
+# Git and version control
+.git
+.gitignore
+.dockerignore
+
+# Node.js and npm
+node_modules/
+npm-debug.log
+npm-error.log
+yarn-error.log
+pnpm-debug.log
+.npm/
+.yarn/
+
+# Next.js build artifacts
+.next/
+.vercel/
+dist/
+build/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Documentation and other files
+README.md
+docs/
+*.md
+
