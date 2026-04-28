@@ -226,6 +226,14 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(errorCode, apiErrorResponse);
     }
 
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnsupportedOperationException(UnsupportedOperationException ex) {
+        log.warn("Unsupported operation: {}", ex.getMessage());
+        ErrorCode errorCode = ErrorCode.NOT_IMPLEMENTED;
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(errorCode, ex.getMessage());
+        return buildErrorResponse(errorCode, apiErrorResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGlobalException(Exception ex) {
         log.error("An unexpected error occurred", ex);

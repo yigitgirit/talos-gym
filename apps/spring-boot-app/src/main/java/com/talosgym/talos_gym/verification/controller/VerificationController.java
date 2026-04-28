@@ -20,7 +20,7 @@ public class VerificationController {
     public ApiResponse<String> confirmCode(@RequestBody CodeConfirmRequest request) {
         validateConfirmPurpose(request.purpose());
         verificationService.verify(request.code(), VerificationType.CODE,request.referenceId(), request.purpose());
-        return ApiResponse.success("Kod doğrulandı! Aramıza hoşgeldiniz.");
+        return ApiResponse.success("Code Confirmed!");
     }
 
     @GetMapping("/confirm-link")
@@ -29,7 +29,7 @@ public class VerificationController {
                                               @RequestParam(value = "purpose", defaultValue = "GENERAL") VerificationPurpose purpose) {
         validateConfirmPurpose(purpose);
         verificationService.verify(token, VerificationType.LINK, referenceId, purpose);
-        return ApiResponse.success("Hesap doğrulandı! Aramıza hoşgeldiniz.");
+        return ApiResponse.success("Link Confirmed!.");
     }
 
     private void validateConfirmPurpose(VerificationPurpose purpose) {
