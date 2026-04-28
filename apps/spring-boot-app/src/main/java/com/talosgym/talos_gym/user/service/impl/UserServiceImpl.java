@@ -1,5 +1,6 @@
 package com.talosgym.talos_gym.user.service.impl;
 
+import com.talosgym.talos_gym.config.SecurityProperties;
 import com.talosgym.talos_gym.exception.ErrorCode;
 import com.talosgym.talos_gym.exception.client.BusinessException;
 import com.talosgym.talos_gym.exception.client.DuplicateResourceException;
@@ -43,6 +44,7 @@ public class UserServiceImpl implements IUserService {
     private final PasswordEncoder passwordEncoder;
     private final VerificationService verificationService;
     private final UserChangeRequestRepository userChangeRequestRepository;
+    private final SecurityProperties securityProperties;
 
     @Override
     @Transactional(readOnly = true)
@@ -141,9 +143,7 @@ public class UserServiceImpl implements IUserService {
         String newEmail = request.newEmail();
         User user = userDomainService.findUserById(userId);
 
-        if (userDomainService.existsByEmail(newEmail)) {
-            throw new DuplicateResourceException("User", "email", newEmail, ErrorCode.EMAIL_ALREADY_EXISTS);
-        }
+        userDomainService.validateAndReclaimEmail(newEmail, securityProperties.getEmailVerificationValidityDays());
 
         // Clean up old requests
         userChangeRequestRepository.deleteByUserIdAndType(userId, UserChangeRequest.RequestType.EMAIL_UPDATE);

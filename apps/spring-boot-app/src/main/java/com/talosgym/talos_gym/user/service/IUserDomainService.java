@@ -20,5 +20,7 @@ public interface IUserDomainService {
 
     boolean existsByPhoneNumber(String phoneNumber);
 
+    void validateAndReclaimEmail(String email, long validityDays);
+
     void deleteUser(User user);
 }

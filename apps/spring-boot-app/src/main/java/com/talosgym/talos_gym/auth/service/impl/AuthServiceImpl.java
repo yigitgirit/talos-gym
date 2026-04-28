@@ -8,9 +8,11 @@ import com.talosgym.talos_gym.auth.repository.PendingUserRepository;
 import com.talosgym.talos_gym.auth.repository.RefreshTokenRepository;
 import com.talosgym.talos_gym.auth.service.IAuthService;
 import com.talosgym.talos_gym.auth.service.TokenBlacklistService;
+import com.talosgym.talos_gym.common.util.ContactFormatUtil;
 import com.talosgym.talos_gym.exception.ErrorCode;
 import com.talosgym.talos_gym.exception.auth.*;
 import com.talosgym.talos_gym.exception.client.DuplicateResourceException;
+import com.talosgym.talos_gym.exception.client.ResourceNotFoundException;
 import com.talosgym.talos_gym.notification.model.NotificationChannel;
 import com.talosgym.talos_gym.config.SecurityProperties;
 import com.talosgym.talos_gym.security.service.JwtService;
@@ -56,9 +58,8 @@ public class AuthServiceImpl implements IAuthService {
 
     @Transactional
     public void register(RegisterRequest request) {
-        if (userDomainService.existsByEmail(request.email())) {
-            throw new DuplicateResourceException("User", "email", request.email(), ErrorCode.EMAIL_ALREADY_EXISTS);
-        }
+        userDomainService.validateAndReclaimEmail(request.email(), securityProperties.getEmailVerificationValidityDays());
+
         if (userDomainService.existsByPhoneNumber(request.phoneNumber())) {
             throw new DuplicateResourceException("User", "phoneNumber", request.phoneNumber(), ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
         }
@@ -117,6 +118,13 @@ public class AuthServiceImpl implements IAuthService {
         log.info("Login request received for identifier: {}", loginRequest.identifier());
 
         User user = userDomainService.findUserByIdentifier(loginRequest.identifier());
+
+        if (ContactFormatUtil.isEmail(loginRequest.identifier())) {
+            VerificationStatus emailStatus = user.getEmailVerificationStatus(securityProperties.getEmailVerificationValidityDays());
+            if (emailStatus != VerificationStatus.VERIFIED) {
+                throw new InvalidInputException("Bu e-posta adresi henüz doğrulanmamış. Lütfen telefon numaranız ile giriş yapın veya e-postanızı doğrulayın.");
+            }
+        }
 
         if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email/phone or password");
@@ -184,10 +192,13 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     @Transactional
-    public void resendVerification(String identifier) {
-        log.info("Resend verification request received for: {}", identifier);
+    public void resendVerificationForPhone(String phoneNumber) {
+        log.info("Resend verification request received for: {}", phoneNumber);
 
-        User user = userDomainService.findUserByIdentifier(identifier);
+        PendingUser pendingUser = pendingUserRepository.findById(phoneNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with phone: " + phoneNumber, ErrorCode.USER_NOT_FOUND));
+
+        User user = userDomainService.findUserByIdentifier(phoneNumber);
 
         if (user.getStatus() != UserStatus.PENDING) {
             throw new InvalidInputException("User is already active or banned. Cannot resend registration verification.");
