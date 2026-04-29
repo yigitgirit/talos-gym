@@ -8,7 +8,7 @@ import {
     PhoneChangeInitiateRequest,
     RefreshRequest,
     RefreshResponse,
-    RegisterRequest,
+    RegisterRequest, ResendVerificationRequest,
     ResetPasswordRequest,
     Role,
     UpdateNotificationPreferenceRequest,
@@ -49,7 +49,7 @@ export type ApiEndpoints = {
         POST: EndpointOperation<string, ForgotPasswordRequest>;
     };
     'api/auth/resend-verification': {
-        POST: EndpointOperation<void>;
+        POST: EndpointOperation<string, ResendVerificationRequest>;
     };
 
     // Verification Endpoints

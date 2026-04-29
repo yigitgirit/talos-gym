@@ -14,5 +14,5 @@ public interface IAuthService {
 
     void logout(String token);
 
-    void resendVerificationForPhone(String identifier);
+    void resendVerificationForPhone(ResendVerificationRequest resendVerificationRequest);
 }

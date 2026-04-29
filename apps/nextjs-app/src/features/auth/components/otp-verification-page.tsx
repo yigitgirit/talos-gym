@@ -13,10 +13,9 @@ import {toast} from "sonner";
 
 interface OTPVerificationPageProps {
     referenceId: string;
-    phoneNumber: string;
 }
 
-export function OTPVerificationPage({ referenceId, phoneNumber }: Readonly<OTPVerificationPageProps>) {
+export function OTPVerificationPage({ referenceId }: Readonly<OTPVerificationPageProps>) {
     const router = useRouter()
 
     const [success, setSuccess] = useState(false)
@@ -42,6 +41,9 @@ export function OTPVerificationPage({ referenceId, phoneNumber }: Readonly<OTPVe
             setOtpValue("")
             otpInputRef.current?.focus()
             toast.success("Verification code resent successfully!");
+        },
+        onError: (error) => {
+            toast.error(`Failed to resend OTP: ${error.message || "Unknown error"}`);
         }
     });
 
@@ -54,15 +56,17 @@ export function OTPVerificationPage({ referenceId, phoneNumber }: Readonly<OTPVe
         }
 
         verifyAction.execute({
-            referenceId, // Perfectly typed as string!
+            referenceId, // Phone number (currently), UUID token (future)
             code,
             purpose: "PHONE_VERIFICATION"
         });
+
+        console.log("Verifying OTP - referenceId:", referenceId, "code:", code)
     }
     
     return (
         <OTPVerificationForm
-            maskedPhone={maskPhone(phoneNumber)} // Perfectly typed as string!
+            maskedPhone={maskPhone(referenceId)} // referenceId is the phone number
             otpValue={otpValue}
             onOtpChange={setOtpValue}
             onSubmit={handleSubmit}

@@ -90,7 +90,7 @@ export function OTPVerificationForm(props: Readonly<OTPVerificationFormProps>) {
 
                 <div className="text-center text-sm">
                     <Button type="button" variant="link" onClick={onResend} disabled={!canResend || isResending || isVerifying} className="h-auto p-0">
-                        Didn&apos;t receive the code? {isResending ? "Sending..." : (canResend ? "Resend" : "Wait")}
+                        Didn&apos;t receive the code? {isResending ? "Sending OTP now..." : (canResend ? "Resend" : "Wait")}
                     </Button>
                 </div>
             </div>

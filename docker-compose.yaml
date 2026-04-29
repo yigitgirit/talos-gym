@@ -1,10 +1,6 @@
 include:
   - docker-compose.db.yaml
 
-networks:
-    backend-network:
-        driver: bridge
-
 services:
   backend:
     build:
@@ -20,6 +16,7 @@ services:
       - SPRING_DATA_REDIS_URL=${SPRING_DATA_REDIS_URL}
       - MACRODROID_WEBHOOK_URL=${MACRODROID_WEBHOOK_URL}
       - MACRODROID_WEBHOOK_SECRET=${MACRODROID_WEBHOOK_SECRET}
+      - LOCATIONIQ_API_KEY=${LOCATIONIQ_API_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
       - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
@@ -59,6 +56,3 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-
-volumes:
-  postgres_data:
