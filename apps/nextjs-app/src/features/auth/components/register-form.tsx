@@ -54,7 +54,9 @@ export function RegisterForm() {
 
   const { execute, isPending } = useServerAction(registerAsync, {
     onSuccess: (_, input) => {
-        setPendingRegistration(input.email, input.phoneNumber, input.email)
+        // Store phoneNumber as referenceId for OTP verification
+        // referenceId will be UUID token in future
+        setPendingRegistration(input.phoneNumber, input.email)
         router.push("/auth/verify-otp")
     },
     onError: (error) => {

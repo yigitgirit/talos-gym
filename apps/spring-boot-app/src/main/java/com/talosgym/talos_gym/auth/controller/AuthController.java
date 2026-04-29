@@ -2,7 +2,6 @@ package com.talosgym.talos_gym.auth.controller;
 
 import com.talosgym.talos_gym.auth.dto.*;
 import com.talosgym.talos_gym.auth.service.IAuthService;
-import com.talosgym.talos_gym.common.annotation.ValidPhone;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +45,8 @@ public class AuthController {
     }
 
     @PostMapping("/resend-verification")
-    public String resendVerification(@RequestParam @ValidPhone String phoneNumber) {
-        authService.resendVerificationForPhone(phoneNumber);
+    public String resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
+        authService.resendVerificationForPhone(request);
         return "Verification code resent successfully";
     }
 }

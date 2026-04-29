@@ -6,23 +6,23 @@ import { toast } from "sonner"
 import { usePendingRegistrationStore } from "@/features/auth/store/pending-registration"
 import { OTPVerificationPage } from "./otp-verification-page"
 
-// Current situtation is not optimized
+// Current situation: referenceId is the phone number
+// Future: referenceId will be an opaque token (UUID)
 export function OTPVerificationContainer() {
     const router = useRouter()
 
     const referenceId = usePendingRegistrationStore(state => state.referenceId)
-    const phoneNumber = usePendingRegistrationStore(state => state.phoneNumber)
 
     useEffect(() => {
-        if (!referenceId || !phoneNumber) {
+        if (!referenceId) {
             toast.error("Session expired. Please log in or register again.")
             router.replace("/auth/register")
         }
-    }, [referenceId, phoneNumber, router])
+    }, [referenceId, router])
 
-    if (!referenceId || !phoneNumber) {
+    if (!referenceId) {
         return null;
     }
 
-    return <OTPVerificationPage referenceId={referenceId} phoneNumber={phoneNumber} />
+    return <OTPVerificationPage referenceId={referenceId} />
 }

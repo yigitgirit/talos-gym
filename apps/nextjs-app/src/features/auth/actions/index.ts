@@ -104,6 +104,6 @@ export async function verifyOTPAsync(input: CodeConfirmRequest) {
  */
 export async function resendOTPAsync(input: ResendVerificationRequest) {
   return actionClient.withInput(ResendVerificationRequestSchema, input).execute(async (validated) => {
-    await getServerApi().post('api/auth/resend-verification', {}, { params: validated })
+    await getServerApi().post('api/auth/resend-verification', validated)
   })
 }

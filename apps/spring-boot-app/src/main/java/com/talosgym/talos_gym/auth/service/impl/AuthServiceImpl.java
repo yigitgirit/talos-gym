@@ -192,20 +192,22 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     @Transactional
-    public void resendVerificationForPhone(String phoneNumber) {
-        log.info("Resend verification request received for: {}", phoneNumber);
+    public void resendVerificationForPhone(ResendVerificationRequest request) {
+        log.info("Resend verification request received for: {}", request.identifier());
+        String identifier = request.identifier(); // Identifier is a phone number, usually
 
-        PendingUser pendingUser = pendingUserRepository.findById(phoneNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with phone: " + phoneNumber, ErrorCode.USER_NOT_FOUND));
+        pendingUserRepository.findById(identifier)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with phone: " + identifier, ErrorCode.USER_NOT_FOUND));
 
-        User user = userDomainService.findUserByIdentifier(phoneNumber);
+        User user = userDomainService.findUserByIdentifier(identifier);
 
         if (user.getStatus() != UserStatus.PENDING) {
             throw new InvalidInputException("User is already active or banned. Cannot resend registration verification.");
         }
 
         if(user.getPhoneVerificationStatus(securityProperties.getPhoneVerificationValidityDays()) != VerificationStatus.NOT_VERIFIED){
-            throw new InvalidInputException("User phone is already verified.");        }
+            throw new InvalidInputException("User phone is already verified.");
+        }
 
         VerificationRequest verificationRequest = new VerificationRequest(
                 user.getId(),
