@@ -9,6 +9,7 @@ import com.talosgym.talos_gym.exception.client.ResourceNotFoundException;
 import com.talosgym.talos_gym.user.model.Role;
 import com.talosgym.talos_gym.user.model.User;
 import com.talosgym.talos_gym.user.model.UserStatus;
+import com.talosgym.talos_gym.user.model.Gender;
 import com.talosgym.talos_gym.user.model.VerificationStatus;
 import com.talosgym.talos_gym.user.repository.UserRepository;
 import com.talosgym.talos_gym.user.repository.UserSpecifications;
@@ -92,7 +93,7 @@ public class UserDomainServiceImpl implements IUserDomainService {
                 .lastName(params.lastName())
                 .gender(params.gender())
                 .roles(Set.of(Role.MEMBER))
-                .status(UserStatus.PENDING)
+                .status(UserStatus.ACTIVE)
                 .build();
     }
 
@@ -124,18 +125,28 @@ public class UserDomainServiceImpl implements IUserDomainService {
     public void deleteUser(User user) {
         refreshTokenRepository.deleteByUserId(user.getId());
 
-        String timestamp = String.valueOf(System.currentTimeMillis());
+        String uniqueSuffix = UUID.randomUUID().toString().substring(0, 8);
+        String timestamp = String.valueOf(System.currentTimeMillis()).substring(3); // Shortened for phone constraints
 
-        user.setEmail("deleted_" + timestamp + "_" + user.getEmail());
-        user.setPhoneNumber("deleted_" + timestamp + "_" + user.getPhoneNumber());
+        // Completely overwrite PII to prevent data leaks (Irreversible)
+        user.setEmail("deleted_" + uniqueSuffix + "@talosgym.local");
+        user.setPhoneNumber("+000" + timestamp + uniqueSuffix.substring(0, 4)); 
 
-        user.setFirstName("Deleted User");
-        user.setLastName(timestamp);
-        user.setPassword("password_for_deleted_user");
+        user.setFirstName("Deleted");
+        user.setLastName("User");
+        user.setPassword(UUID.randomUUID().toString());
+        
+        // Clear Demographics, Authorities, and Linked Metadata
+        user.setGender(Gender.NOT_SPECIFIED);
+        user.getRoles().clear();
+        user.getNotificationPreferences().clear();
+        user.setEmailVerifiedAt(null);
+        user.setPhoneVerifiedAt(null);
         user.setDeleted(true);
+        user.setStatus(UserStatus.INACTIVE);
 
         userRepository.save(user);
 
-        log.info("Kullanıcı (ID: {}) anonimleştirilerek soft-delete yapıldı.", user.getId() );
+        log.info("User (ID: {}) anonymized and soft-deleted.", user.getId());
     }
 }

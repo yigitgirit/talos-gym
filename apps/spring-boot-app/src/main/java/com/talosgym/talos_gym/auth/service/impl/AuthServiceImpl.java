@@ -199,8 +199,7 @@ public class AuthServiceImpl implements IAuthService {
         String identifier = request.identifier(); // Identifier is a phone number, usually
 
         PendingUser pendingUser = pendingUserRepository.findById(identifier)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with phone: " + identifier, ErrorCode.USER_NOT_FOUND));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Pending user not found", ErrorCode.PENDING_USER_NOT_FOUND));
 
         VerificationRequest verificationRequest = new VerificationRequest(
                 null,
@@ -210,7 +209,7 @@ public class AuthServiceImpl implements IAuthService {
                 pendingUser.getPhoneNumber()
         );
 
-        verificationService.startVerification(verificationRequest);
+        verificationService.startVerification(verificationRequest, pendingUser.getPhoneNumber());
         log.info("Verification SMS resent to: {}", pendingUser.getPhoneNumber());
     }
 

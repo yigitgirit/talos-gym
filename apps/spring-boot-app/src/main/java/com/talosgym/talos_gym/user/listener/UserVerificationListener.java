@@ -2,7 +2,6 @@ package com.talosgym.talos_gym.user.listener;
 
 import com.talosgym.talos_gym.auth.service.IAuthService;
 import com.talosgym.talos_gym.user.model.User;
-import com.talosgym.talos_gym.user.model.UserStatus;
 import com.talosgym.talos_gym.user.service.IUserDomainService;
 import com.talosgym.talos_gym.user.service.IUserService;
 import com.talosgym.talos_gym.verification.event.VerificationCompletedEvent;
@@ -30,10 +29,6 @@ public class UserVerificationListener {
             User user = userDomainService.findUserById(event.getUserId());
             user.setPhoneVerifiedAt(Instant.now());
 
-            if (user.getStatus() == UserStatus.PENDING) {
-                user.setStatus(UserStatus.ACTIVE);
-                log.info("User ID: {} activated after phone verification.", user.getId());
-            }
             userDomainService.saveUser(user);
             log.info("User ID: {} phone number verified successfully.", user.getId());
 

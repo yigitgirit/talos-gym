@@ -58,15 +58,15 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name = "user_id")
     )
     @Column(name = "role")
-    @NotEmpty
-    private Set<Role> roles;
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserNotificationPreference> notificationPreferences = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserStatus status = UserStatus.PENDING;
+    private UserStatus status = UserStatus.ACTIVE;
 
     private Instant phoneVerifiedAt;
 

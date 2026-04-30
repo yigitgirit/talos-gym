@@ -24,6 +24,7 @@ public enum ErrorCode {
     TOKEN_EXPIRED("E2004", "Access token has expired.", HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_EXPIRED("E2005", "Refresh token expired. Please login again.", HttpStatus.FORBIDDEN),
     USER_ACCOUNT_LOCKED("E2006", "User account is locked.", HttpStatus.FORBIDDEN),
+    PENDING_USER_NOT_FOUND("E2007", "User registration is not found. Please try to register again.", HttpStatus.NOT_FOUND),
 
     // =====================================================================
     // 3. DATA & VALIDATION (E3xxx)
@@ -50,8 +51,6 @@ public enum ErrorCode {
     VERIFICATION_EXPIRED("E4102", "Verification token has expired.", HttpStatus.BAD_REQUEST),
     VERIFICATION_NOT_FOUND("E4103", "Verification token not found.", HttpStatus.NOT_FOUND),
     VERIFICATION_ALREADY_COMPLETED("E4104", "Verification has already been completed.", HttpStatus.CONFLICT),
-    
-    // TODO: buraya E41xx serisi kodlar ekleyebilirsin.
 
     // =====================================================================
     // 5. GENERIC SYSTEM ERRORS (E5xxx)
