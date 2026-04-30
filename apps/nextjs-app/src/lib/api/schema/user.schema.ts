@@ -9,8 +9,7 @@ import {
     AddressSchema,
     NonBlankStringSchema,
     ChangePasswordSchema,
-    PHONE_REGEX,
-    createPagedDataSchema
+    createPagedDataSchema, PhoneNumberSchema
 } from './common.schema';
 
 export const UserStatusSchema = z.enum(['ACTIVE', 'INACTIVE', 'PENDING', 'BANNED']);
@@ -65,16 +64,12 @@ export const ChangePasswordRequestSchema = z
 export type ChangePasswordRequest = z.infer<typeof ChangePasswordRequestSchema>;
 
 export const EmailChangeInitiateRequestSchema = z.object({
-    newEmail: z.email('Invalid email format').min(1, 'New email is required'),
+    newEmail: EmailSchema,
 });
 export type EmailChangeInitiateRequest = z.infer<typeof EmailChangeInitiateRequestSchema>;
 
 export const PhoneChangeInitiateRequestSchema = z.object({
-    newPhoneNumber: z
-        .string()
-        .trim()
-        .min(1, 'New phone number is required')
-        .regex(PHONE_REGEX, 'Geçersiz telefon numarası formatı. Geçerli karakterler: rakamlar, boşluk, +, -, (, )'),
+    newPhoneNumber: PhoneNumberSchema,
 });
 export type PhoneChangeInitiateRequest = z.infer<typeof PhoneChangeInitiateRequestSchema>;
 
