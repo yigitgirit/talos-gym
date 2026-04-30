@@ -67,8 +67,8 @@ public class ClubServiceImpl implements IClubService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ClubResponse> getClubs(String search, String city, String district, Boolean active, Pageable pageable) {
-        Specification<Club> spec = ClubSpecifications.withFilters(search, city, district, active);
+    public Page<ClubResponse> getClubs(ClubSearchRequest request, Pageable pageable) {
+        Specification<Club> spec = ClubSpecifications.withFilters(request.search(), request.city(), request.district(), request.active());
         Page<Club> clubs = clubRepository.findAll(spec, pageable);
         return clubs.map(clubMapper::mapToResponse);
     }
