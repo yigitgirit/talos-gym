@@ -34,6 +34,11 @@ public class Club extends BaseEntity {
 
     private String description;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "club_photo_urls", joinColumns = @JoinColumn(name = "club_id"))
+    @Column(name = "photo_url")
+    private List<String> photoUrls = new ArrayList<>();
+
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClubOperatingHour> operatingHours = new ArrayList<>();
 

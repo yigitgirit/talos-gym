@@ -12,7 +12,6 @@ import com.talosgym.talos_gym.club.service.IClubService;
 import com.talosgym.talos_gym.exception.ErrorCode;
 import com.talosgym.talos_gym.exception.client.DuplicateResourceException;
 import com.talosgym.talos_gym.exception.client.ResourceNotFoundException;
-import com.talosgym.talos_gym.integration.location.port.IGeocodingPort;
 import com.talosgym.talos_gym.integration.location.service.GeocodingRouterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,7 +36,7 @@ public class ClubServiceImpl implements IClubService {
     public ClubResponse createClub(ClubCreateRequest request) {
         String slug = request.slug();
 
-        if(slug == null){
+        if (slug == null) {
             slug = generateSlug(request.name());
         }
 
@@ -57,6 +56,7 @@ public class ClubServiceImpl implements IClubService {
         club.setActive(true);
         club.setScoreMultiplier(request.scoreMultiplier());
         club.setAddress(address);
+        club.setPhotoUrls(request.photoUrls());
 
         Club save = clubRepository.save(club);
         List<ClubOperatingHour> defaultOperatingHours = clubScheduleDomainService.createDefaultOperatingHoursForClub(save);
@@ -96,10 +96,10 @@ public class ClubServiceImpl implements IClubService {
             club.setName(request.name());
         }
 
-        if (request.slug() != null){
+        if (request.slug() != null) {
 
             if (clubRepository.existsBySlug(request.slug())) {
-                throw new DuplicateResourceException("Club exist with slug :"+ request.slug(), ErrorCode.VALIDATION_ERROR);
+                throw new DuplicateResourceException("Club exist with slug :" + request.slug(), ErrorCode.VALIDATION_ERROR);
             }
 
             club.setSlug(request.slug());
@@ -121,10 +121,15 @@ public class ClubServiceImpl implements IClubService {
             club.setActive(request.active());
         }
 
-        if (request.address() != null && !request.address().externalLocationId().equals(club.getAddress().getExternalLocationId())){
+        if (request.address() != null && !request.address().externalLocationId().equals(club.getAddress().getExternalLocationId())) {
             GeoLocationResult geoLocationResult = geocodingRouterService.resolveLocation(request.address().externalLocationId(), request.address().provider());
 
             club.setAddress(clubMapper.geoLocationResultToAddress(geoLocationResult));
+        }
+
+        if (request.photoUrls() != null) {
+            club.getPhotoUrls().clear();
+            club.getPhotoUrls().addAll(request.photoUrls());
         }
 
         Club updatedClub = clubRepository.save(club);
