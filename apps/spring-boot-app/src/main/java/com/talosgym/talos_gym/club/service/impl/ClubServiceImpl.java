@@ -56,6 +56,7 @@ public class ClubServiceImpl implements IClubService {
         club.setActive(true);
         club.setScoreMultiplier(request.scoreMultiplier());
         club.setAddress(address);
+        club.setPhotoUrls(request.photoUrls());
 
         Club save = clubRepository.save(club);
         List<ClubOperatingHour> defaultOperatingHours = clubScheduleDomainService.createDefaultOperatingHoursForClub(save);
@@ -96,6 +97,7 @@ public class ClubServiceImpl implements IClubService {
         }
 
         if (request.slug() != null) {
+
             if (clubRepository.existsBySlug(request.slug())) {
                 throw new DuplicateResourceException("Club exist with slug: " + request.slug(), ErrorCode.VALIDATION_ERROR);
             }
@@ -123,6 +125,11 @@ public class ClubServiceImpl implements IClubService {
             GeoLocationResult geoLocationResult = geocodingRouterService.resolveLocation(request.address().externalLocationId(), request.address().provider());
 
             club.setAddress(clubMapper.geoLocationResultToAddress(geoLocationResult));
+        }
+
+        if (request.photoUrls() != null) {
+            club.getPhotoUrls().clear();
+            club.getPhotoUrls().addAll(request.photoUrls());
         }
 
         Club updatedClub = clubRepository.save(club);

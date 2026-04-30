@@ -1,9 +1,12 @@
 package com.talosgym.talos_gym.club.dto;
 
-import com.talosgym.talos_gym.common.validator.ValidTimeZone;
+import com.talosgym.talos_gym.common.annotation.ValidPhotoUrl;
+import com.talosgym.talos_gym.common.annotation.ValidTimeZone;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
+import java.util.List;
 
 public record ClubUpdateRequest(
         @Size(max = 100) String name,
@@ -13,5 +16,11 @@ public record ClubUpdateRequest(
         @ValidTimeZone String timeZone,
         String description,
         Double scoreMultiplier,
-        Boolean active
+        Boolean active,
+        @Size(max = 10, message = "Photo URLs cannot exceed 10 items")
+        List<
+                @ValidPhotoUrl
+                @Size(max = 500, message = "URL cannot exceed 500 characters")
+                        String
+                > photoUrls
 ) {}
