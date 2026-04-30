@@ -115,11 +115,13 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-        log.info("Login request received for identifier: {}", loginRequest.identifier());
+        String identifier = loginRequest.identifier();
 
-        User user = userDomainService.findUserByIdentifier(loginRequest.identifier());
+        log.info("Login request received for identifier: {}", identifier);
 
-        if (ContactFormatUtil.isEmail(loginRequest.identifier())) {
+        User user = userDomainService.findUserByIdentifier(identifier);
+
+        if (ContactFormatUtil.isEmail(identifier)) {
             VerificationStatus emailStatus = user.getEmailVerificationStatus(securityProperties.getEmailVerificationValidityDays());
             if (emailStatus != VerificationStatus.VERIFIED) {
                 throw new InvalidInputException("Bu e-posta adresi henüz doğrulanmamış. Lütfen telefon numaranız ile giriş yapın veya e-postanızı doğrulayın.");
@@ -197,8 +199,7 @@ public class AuthServiceImpl implements IAuthService {
         String identifier = request.identifier(); // Identifier is a phone number, usually
 
         PendingUser pendingUser = pendingUserRepository.findById(identifier)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with phone: " + identifier, ErrorCode.USER_NOT_FOUND));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Pending user not found", ErrorCode.PENDING_USER_NOT_FOUND));
 
         VerificationRequest verificationRequest = new VerificationRequest(
                 null,
@@ -208,7 +209,7 @@ public class AuthServiceImpl implements IAuthService {
                 pendingUser.getPhoneNumber()
         );
 
-        verificationService.startVerification(verificationRequest);
+        verificationService.startVerification(verificationRequest, pendingUser.getPhoneNumber());
         log.info("Verification SMS resent to: {}", pendingUser.getPhoneNumber());
     }
 

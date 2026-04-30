@@ -15,17 +15,17 @@ public record CreateUserParams(
     public CreateUserParams {
 
         if (email == null || email.isBlank()) {
-            throw new InvalidInputException("Email adresi boş olamaz.");
+            throw new InvalidInputException("Email address cannot be empty.");
         }
         if (firstName == null || firstName.trim().length() < 2) {
-            throw new InvalidInputException("İsim en az 2 karakter olmalıdır.");
+            throw new InvalidInputException("First name must be at least 2 characters.");
         }
 
         if(!ContactFormatUtil.isEmail(email)){
-            throw new InvalidInputException("Geçersiz email adresi.");
+            throw new InvalidInputException("Invalid email address.");
         }
         if (!ContactFormatUtil.isPhone(phoneNumber)) {
-            throw new InvalidInputException("Geçersiz telefon numarası.");
+            throw new InvalidInputException("Invalid phone number.");
         }
     }
 }

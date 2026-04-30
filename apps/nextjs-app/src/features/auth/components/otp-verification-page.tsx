@@ -10,6 +10,7 @@ import { useVisibilityAutoFocus } from "@/features/common/hooks/useVisibilityAut
 import { maskPhone } from "@/features/common/utils/formatters"
 import { OTPVerificationForm } from "./otp-verification-form"
 import {toast} from "sonner";
+import { getErrorMessage } from "@/constants/error-codes";
 
 interface OTPVerificationPageProps {
     referenceId: string;
@@ -24,7 +25,6 @@ export function OTPVerificationPage({ referenceId }: Readonly<OTPVerificationPag
     const { timeLeft, isFinished: canResend, resetTimer } = useCountdownTimer(60)
     const otpInputRef = useVisibilityAutoFocus<HTMLInputElement>(!otpValue) // Only auto-focus if empty
 
-    // 1. The Verification Action
     const verifyAction = useServerAction(verifyOTPAsync, {
         onSuccess: () => {
             setSuccess(true)
@@ -34,7 +34,6 @@ export function OTPVerificationPage({ referenceId }: Readonly<OTPVerificationPag
         }
     });
 
-    // 2. The Resend Action
     const resendAction = useServerAction(resendOTPAsync, {
         onSuccess: () => {
             resetTimer()
@@ -43,7 +42,7 @@ export function OTPVerificationPage({ referenceId }: Readonly<OTPVerificationPag
             toast.success("Verification code resent successfully!");
         },
         onError: (error) => {
-            toast.error(`Failed to resend OTP: ${error.message || "Unknown error"}`);
+            toast.error(getErrorMessage(error.code, error.message));
         }
     });
 
@@ -64,6 +63,13 @@ export function OTPVerificationPage({ referenceId }: Readonly<OTPVerificationPag
         console.log("Verifying OTP - referenceId:", referenceId, "code:", code)
     }
     
+    const verifyError = verifyAction.error;
+
+    const rootErrorMessage = verifyError
+        ? getErrorMessage(verifyError.code, verifyError.message) 
+        : undefined;
+    const fieldErrorMessage = verifyError?.details?.find(d => d.field === 'code')?.message;
+
     return (
         <OTPVerificationForm
             maskedPhone={maskPhone(referenceId)} // referenceId is the phone number
@@ -76,8 +82,8 @@ export function OTPVerificationPage({ referenceId }: Readonly<OTPVerificationPag
             isSuccess={success}
             canResend={canResend}
             timeLeft={timeLeft}
-            rootError={verifyAction.error?.message}
-            fieldError={verifyAction.error?.details?.find(d => d.field === 'code')?.message}
+            rootError={rootErrorMessage}
+            fieldError={fieldErrorMessage}
             inputRef={otpInputRef}
         />
     )

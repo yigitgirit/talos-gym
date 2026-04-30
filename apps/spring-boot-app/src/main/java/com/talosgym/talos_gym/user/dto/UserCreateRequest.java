@@ -1,5 +1,7 @@
 package com.talosgym.talos_gym.user.dto;
 
+import com.talosgym.talos_gym.common.util.DataNormalizationUtil;
+import com.talosgym.talos_gym.common.util.ContactFormatUtil;
 import com.talosgym.talos_gym.user.model.Gender;
 import jakarta.validation.constraints.*;
 import com.talosgym.talos_gym.user.model.Role;
@@ -8,7 +10,7 @@ import java.util.Set;
 
 public record UserCreateRequest(
         @NotBlank(message = "Email cannot be blank")
-        @Email(message = "Please provide a valid email address", regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
+        @Email(message = "Please provide a valid email address", regexp = ContactFormatUtil.EMAIL_REGEX)
         String email,
 
         @NotBlank(message = "Password cannot be blank")
@@ -29,4 +31,11 @@ public record UserCreateRequest(
         Set<Role> roles,
 
         Gender gender
-) {}
+) {
+    // Compact constructor for automatic data normalization
+    public UserCreateRequest {
+        email = DataNormalizationUtil.normalizeEmail(email);
+        firstName = DataNormalizationUtil.normalizeName(firstName);
+        lastName = DataNormalizationUtil.normalizeName(lastName);
+    }
+}

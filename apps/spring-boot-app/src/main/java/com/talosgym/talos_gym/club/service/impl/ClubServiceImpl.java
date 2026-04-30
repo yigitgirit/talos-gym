@@ -67,8 +67,8 @@ public class ClubServiceImpl implements IClubService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ClubResponse> getClubs(ClubSearchRequest request, Pageable pageable) {
-        Specification<Club> spec = ClubSpecifications.withFilters(request.search(), request.city(), request.district(), request.active());
+    public Page<ClubResponse> getClubs(String search, String city, String district, Boolean active, Pageable pageable) {
+        Specification<Club> spec = ClubSpecifications.withFilters(search, city, district, active);
         Page<Club> clubs = clubRepository.findAll(spec, pageable);
         return clubs.map(clubMapper::mapToResponse);
     }
@@ -99,7 +99,7 @@ public class ClubServiceImpl implements IClubService {
         if (request.slug() != null) {
 
             if (clubRepository.existsBySlug(request.slug())) {
-                throw new DuplicateResourceException("Club exist with slug :" + request.slug(), ErrorCode.VALIDATION_ERROR);
+                throw new DuplicateResourceException("Club exist with slug: " + request.slug(), ErrorCode.VALIDATION_ERROR);
             }
 
             club.setSlug(request.slug());

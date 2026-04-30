@@ -2,11 +2,11 @@ import { z } from 'zod';
 import { ROLES } from '@/constants/roles';
 
 // --- Shared patterns / primitives ---
-export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export const PHONE_REGEX = /^\+?[0-9. ()-]{7,25}$/;
 export const NAME_REGEX = /^[\p{L} .'-]+$/u;
+export const EMAIL_REGEX = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,7}$/;
 
-export const NonBlankStringSchema = z.string().trim().min(1);
+export const NonBlankStringSchema = z.string().trim().min(1, 'Cannot be blank');
 
 export const EmailSchema = z
     .email()
@@ -16,7 +16,7 @@ export const PhoneNumberSchema = z
     .string()
     .trim()
     .min(1, 'Phone number cannot be blank')
-    .regex(PHONE_REGEX, 'Geçersiz telefon numarası formatı. Geçerli karakterler: rakamlar, boşluk, +, -, (, )');
+    .regex(PHONE_REGEX, 'Please provide a valid phone number');
 
 export const PasswordSchema = z
     .string()
@@ -54,10 +54,14 @@ export const OtpCodeSchema = z.string().trim().min(1);
 export const AddressSchema = z.string().max(255);
 
 // --- Shared Enums ---
-export const GenderSchema = z.enum(['NOT_SPECIFIED', 'MALE', 'FEMALE', 'EITHER']);
+export const GenderSchema = z.enum(['NOT_SPECIFIED', 'MALE', 'FEMALE', 'EITHER'], {
+    message: 'Please select a valid gender option',
+});
 export type Gender = z.infer<typeof GenderSchema>;
 
-export const RoleSchema = z.enum(ROLES);
+export const RoleSchema = z.enum(ROLES, {
+    message: 'Please select a valid role',
+});
 export type Role = z.infer<typeof RoleSchema>;
 
 // --- Shared API/Error DTOs ---

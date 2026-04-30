@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Controller, useForm, Path } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
@@ -18,6 +18,8 @@ import { useServerAction } from "@/hooks/useServerAction"
 import { registerAsync } from "@/features/auth/actions"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { usePendingRegistrationStore } from "@/features/auth/store/pending-registration"
+import { handleFormServerErrors } from "@/features/common/utils/form-errors"
+import { PhoneInputField } from "@/components/ui/phone-input"
 
 export function RegisterForm() {
   const router = useRouter()
@@ -37,44 +39,13 @@ export function RegisterForm() {
     },
   })
 
-    // I could add this Zod schema. It belongs to ValidationErrorDetails in backend
-    // It should treated as part of the api error and error codes of course
-  const isValidFieldName = (fieldName: string): fieldName is Path<RegisterInput> => {
-    const validFields: (Path<RegisterInput>)[] = [
-      "firstName",
-      "lastName",
-      "email",
-      "phoneNumber",
-      "password",
-      "confirmPassword",
-      "gender"
-    ]
-    return validFields.includes(fieldName as Path<RegisterInput>)
-  }
-
   const { execute, isPending } = useServerAction(registerAsync, {
     onSuccess: (_, input) => {
-        // Store phoneNumber as referenceId for OTP verification
-        // referenceId will be UUID token in future
         setPendingRegistration(input.phoneNumber, input.email)
         router.push("/auth/verify-otp")
     },
     onError: (error) => {
-      if (error.details && error.details.length > 0) {
-        error.details.forEach((detail) => {
-          if (detail.field && isValidFieldName(detail.field)) {
-            form.setError(detail.field, {
-              type: "server",
-              message: detail.message
-            })
-          }
-        })
-      } else {
-        form.setError("root", {
-          type: "server",
-          message: error.message
-        })
-      }
+      handleFormServerErrors(error, form.setError)
     }
   })
 
@@ -184,13 +155,12 @@ export function RegisterForm() {
                 <FieldLabel htmlFor="register-phone" className="text-xs font-medium block">
                   Phone
                 </FieldLabel>
-                <Input
+                <PhoneInputField
                   {...field}
                   id="register-phone"
-                  placeholder="+1 555 0000"
+                  placeholder="+90 555 000 00 00"
                   disabled={isPending}
                   aria-invalid={fieldState.invalid}
-                  autoComplete="tel"
                   className="h-8 text-sm"
                 />
                 {fieldState.invalid && fieldState.error && (

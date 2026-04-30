@@ -1,5 +1,6 @@
 package com.talosgym.talos_gym.user.dto;
 
+import com.talosgym.talos_gym.common.util.DataNormalizationUtil;
 import com.talosgym.talos_gym.user.model.Gender;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -17,4 +18,11 @@ public record UpdateUserRequest(
 
         @Size(max = 255)
         String address
-) {}
+) {
+    // Compact constructor for automatic data normalization
+    public UpdateUserRequest {
+        firstName = DataNormalizationUtil.normalizeName(firstName);
+        lastName = DataNormalizationUtil.normalizeName(lastName);
+        if (address != null) address = address.trim();
+    }
+}

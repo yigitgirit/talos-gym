@@ -1,9 +1,7 @@
 package com.talosgym.talos_gym.verification.validator.filter;
 
-import com.talosgym.talos_gym.config.SecurityProperties;
 import com.talosgym.talos_gym.exception.verification.VerificationPurposeException;
 import com.talosgym.talos_gym.user.model.User;
-import com.talosgym.talos_gym.user.model.UserStatus;
 import com.talosgym.talos_gym.user.model.VerificationStatus;
 import com.talosgym.talos_gym.verification.model.VerificationPurpose;
 import com.talosgym.talos_gym.verification.model.VerificationRequest;
