@@ -19,6 +19,8 @@ import {
 import { useServerAction } from "@/hooks/useServerAction"
 import { loginAsync } from "@/features/auth/actions"
 import { AlertCircle, Loader2 } from "lucide-react"
+import { handleFormServerErrors } from "@/features/common/utils/form-errors"
+import { PhoneInputField } from "@/components/ui/phone-input"
 
 export function LoginForm() {
   const [useEmail, setUseEmail] = React.useState(false)
@@ -39,19 +41,7 @@ export function LoginForm() {
       globalThis.location.href = "/";
     },
     onError: (error) => {
-      if (error.details && error.details.length > 0) {
-        error.details.forEach((detail) => {
-          form.setError(detail.field as keyof LoginInput, {
-            type: "server",
-            message: detail.message
-          })
-        })
-      } else {
-        form.setError("root", {
-          type: "server",
-          message: error.message
-        })
-      }
+      handleFormServerErrors(error, form.setError)
     }
   })
 
@@ -82,16 +72,27 @@ export function LoginForm() {
               <FieldLabel htmlFor="login-identifier" className="text-xs font-medium block">
                 {useEmail ? "Email" : "Phone Number"}
               </FieldLabel>
-              <Input
-                {...field}
-                id="login-identifier"
-                type={useEmail ? "email" : "tel"}
-                placeholder={useEmail ? "your-email@example.com" : "+90 555 0000"}
-                disabled={isPending}
-                aria-invalid={fieldState.invalid}
-                autoComplete={useEmail ? "email" : "tel"}
-                className="h-8 text-sm"
-              />
+              {useEmail ? (
+                <Input
+                  {...field}
+                  id="login-identifier"
+                  type="email"
+                  placeholder="your-email@example.com"
+                  disabled={isPending}
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="email"
+                  className="h-8 text-sm"
+                />
+              ) : (
+                <PhoneInputField
+                  {...field}
+                  id="login-identifier"
+                  placeholder="+90 555 000 00 00"
+                  disabled={isPending}
+                  aria-invalid={fieldState.invalid}
+                  className="h-8 text-sm"
+                />
+              )}
               {fieldState.invalid && fieldState.error && (
                 <FieldError errors={[fieldState.error]} />
               )}
