@@ -1,6 +1,7 @@
 package com.talosgym.talos_gym.notification.service.strategy;
 
 import com.talosgym.talos_gym.common.util.ContactFormatUtil;
+import com.talosgym.talos_gym.common.util.DataNormalizationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.talosgym.talos_gym.notification.model.NotificationChannel;
@@ -29,7 +30,7 @@ public class SmsNotificationStrategy implements NotificationStrategy {
             return;
         }
 
-        phoneNumber = phoneNumber.replaceAll("\\s+", "");
+        phoneNumber = DataNormalizationUtil.normalizePhone(phoneNumber);
         if (!ContactFormatUtil.isPhone(phoneNumber)) {
             log.warn("SMS sending cancelled: Invalid phone number format '{}' for User ID: {}", phoneNumber, request.getUserId());
             return;

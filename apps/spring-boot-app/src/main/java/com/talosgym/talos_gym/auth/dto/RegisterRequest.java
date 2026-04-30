@@ -1,6 +1,8 @@
 package com.talosgym.talos_gym.auth.dto;
 
 import com.talosgym.talos_gym.common.annotation.ValidPhone;
+import com.talosgym.talos_gym.common.util.DataNormalizationUtil;
+import com.talosgym.talos_gym.common.util.ContactFormatUtil;
 import com.talosgym.talos_gym.user.model.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +11,7 @@ import jakarta.validation.constraints.Size;
 
 public record RegisterRequest(
         @NotBlank(message = "Email cannot be blank")
-        @Email(message = "Please provide a valid email address", regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
+        @Email(message = "Please provide a valid email address", regexp = ContactFormatUtil.EMAIL_REGEX)
         String email,
 
         @NotBlank(message = "Phone number cannot be blank")
@@ -31,4 +33,12 @@ public record RegisterRequest(
         String lastName,
 
         Gender gender
-) {}
+) {
+    // Compact constructor for automatic data normalization
+    public RegisterRequest {
+        email = DataNormalizationUtil.normalizeEmail(email);
+        phoneNumber = DataNormalizationUtil.normalizePhone(phoneNumber);
+        firstName = DataNormalizationUtil.normalizeName(firstName);
+        lastName = DataNormalizationUtil.normalizeName(lastName);
+    }
+}
