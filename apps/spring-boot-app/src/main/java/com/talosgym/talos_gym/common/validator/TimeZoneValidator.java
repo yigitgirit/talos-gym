@@ -1,6 +1,6 @@
-package com.talosgym.talos_gym.common.annotation;
+package com.talosgym.talos_gym.common.validator;
 
-import com.talosgym.talos_gym.common.validator.ValidTimeZone;
+import com.talosgym.talos_gym.common.annotation.ValidTimeZone;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

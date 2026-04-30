@@ -1,6 +1,6 @@
-package com.talosgym.talos_gym.common.validator;
+package com.talosgym.talos_gym.common.annotation;
 
-import com.talosgym.talos_gym.common.annotation.TimeZoneValidator;
+import com.talosgym.talos_gym.common.validator.TimeZoneValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

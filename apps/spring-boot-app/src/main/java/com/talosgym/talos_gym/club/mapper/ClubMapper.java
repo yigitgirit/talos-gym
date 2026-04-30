@@ -41,6 +41,7 @@ public class ClubMapper {
                 club.getDescription(),
                 club.isActive(),
                 club.getScoreMultiplier(),
+                club.getPhotoUrls(),
                 operatingHours,
                 overrides
         );

@@ -13,6 +13,7 @@ public record ClubResponse(
         String description,
         boolean active,
         Double scoreMultiplier,
+        List<String> photoUrls,
         List<OperatingHourDto> operatingHours,
         List<ScheduleOverrideDto> scheduleOverrides
 ) {}
