@@ -1,99 +1,152 @@
 import * as React from "react"
-import { AuthLayout } from "@/features/auth/components/auth-layout"
+import { AlertCircle, CheckCircle2, Clock } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { AlertCircle, CheckCircle2, Clock, Smartphone } from "lucide-react"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { OTPInputDefaultPreview } from "@/components/ui/input-otp"
 
-interface OTPVerificationFormProps {
-    maskedPhone: string;
-    otpValue: string;
-    onOtpChange: (value: string) => void;
-    onSubmit: (e: React.SubmitEvent) => void;
-    onResend: () => void;
-    isVerifying: boolean;
-    isResending: boolean;
-    isSuccess: boolean;
-    canResend: boolean;
-    timeLeft: number;
-    rootError?: string | null;
-    fieldError?: string | null;
-    inputRef: React.RefObject<HTMLInputElement | null>;
+type OTPVerificationStatusTone = "error" | "success"
+
+export interface OTPVerificationFormProps {
+    value: string
+    onValueChange: (value: string) => void
+    onSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void
+    onResend: () => void
+    inputRef?: React.RefObject<HTMLInputElement | null>
+    fieldError?: string | null
+    statusMessage?: string | null
+    statusTone?: OTPVerificationStatusTone
+    isSubmitting?: boolean
+    isResending?: boolean
+    isComplete?: boolean
+    canResend?: boolean
+    timeLeft?: number
+    codeLength?: number
+    label?: string
+    description?: string
+    submitLabel?: string
+    submittingLabel?: string
+    completeLabel?: string
+    resendPrompt?: string
+    resendLabel?: string
+    resendPendingLabel?: string
+    resendWaitLabel?: string
+    resendReadyMessage?: string
 }
 
-export function OTPVerificationForm(props: Readonly<OTPVerificationFormProps>) {
-    const {
-        maskedPhone, otpValue, onOtpChange, onSubmit, onResend,
-        isVerifying, isResending, isSuccess, canResend, timeLeft,
-        rootError, fieldError, inputRef
-    } = props;
-
-    const buttonText = isVerifying ? "Verifying..." : isSuccess ? "Verified!" : "Verify & Continue";
+function StatusMessage({
+    children,
+    tone,
+}: Readonly<{
+    children: React.ReactNode
+    tone: OTPVerificationStatusTone
+}>) {
+    const isError = tone === "error"
+    const Icon = isError ? AlertCircle : CheckCircle2
 
     return (
-        <AuthLayout title="Verify your number" description={`We've sent a 6-digit code to ${maskedPhone}`}>
-            <div className="space-y-4">
-                <div className="flex justify-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                        <Smartphone className="w-6 h-6 text-blue-600" />
-                    </div>
-                </div>
+        <div
+            aria-live={isError ? "assertive" : "polite"}
+            className={
+                isError
+                    ? "mb-3 flex gap-2.5 rounded-lg border border-destructive-border bg-destructive-subtle p-3 text-destructive"
+                    : "mb-3 flex gap-2.5 rounded-lg border border-accent-border bg-accent-subtle p-3 text-accent-foreground"
+            }
+            role={isError ? "alert" : "status"}
+        >
+            <Icon className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+            <p className="text-sm font-medium">{children}</p>
+        </div>
+    )
+}
 
-                <Card size="sm" className="bg-gray-50 border-gray-200 py-0">
-                    <CardContent className="p-4 sm:p-5">
-                        {rootError && !fieldError && (
-                            <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 flex gap-2.5">
-                                <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-                                <p className="text-sm text-red-900 font-medium">{rootError}</p>
-                            </div>
-                        )}
+export function OTPVerificationForm({
+    value,
+    onValueChange,
+    onSubmit,
+    onResend,
+    inputRef,
+    fieldError,
+    statusMessage,
+    statusTone = "error",
+    isSubmitting = false,
+    isResending = false,
+    isComplete = false,
+    canResend = false,
+    timeLeft = 0,
+    codeLength = 6,
+    label = "Verification code",
+    description = "Enter the code you received.",
+    submitLabel = "Verify & Continue",
+    submittingLabel = "Verifying...",
+    completeLabel = "Verified!",
+    resendPrompt = "Didn't receive the code?",
+    resendLabel = "Resend",
+    resendPendingLabel = "Sending code...",
+    resendWaitLabel = "Wait",
+    resendReadyMessage = "Code expired. You can resend now.",
+}: Readonly<OTPVerificationFormProps>) {
+    const descriptionId = React.useId()
+    const errorId = React.useId()
+    const hasFieldError = Boolean(fieldError)
+    const isSubmitDisabled = isSubmitting || isComplete || value.length !== codeLength
+    const submitText = isSubmitting ? submittingLabel : isComplete ? completeLabel : submitLabel
+    const resendText = isResending ? resendPendingLabel : canResend ? resendLabel : resendWaitLabel
+
+    return (
+        <div className="w-full">
+            {statusMessage && (
+                <StatusMessage tone={statusTone}>{statusMessage}</StatusMessage>
+            )}
+
+            <form onSubmit={onSubmit} className="flex flex-col gap-3">
+                <FieldGroup className="gap-3">
+                    <Field data-invalid={hasFieldError || undefined}>
+                        <FieldLabel className="text-sm font-medium">{label}</FieldLabel>
+                        <FieldDescription id={descriptionId} className="text-xs">
+                            {description}
+                        </FieldDescription>
+
+                        <OTPInputDefaultPreview
+                            aria-describedby={hasFieldError ? `${descriptionId} ${errorId}` : descriptionId}
+                            aria-invalid={hasFieldError}
+                            disabled={isComplete || isSubmitting}
+                            onChange={onValueChange}
+                            ref={inputRef}
+                            slotCount={codeLength}
+                            value={value}
+                        />
                         {fieldError && (
-                            <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 flex gap-2.5">
-                                <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-                                <p className="text-sm text-red-900 font-medium">{fieldError}</p>
-                            </div>
+                            <FieldError id={errorId} errors={[{ message: fieldError }]} />
                         )}
-                        {isSuccess && (
-                            <div className="mb-4 rounded-lg bg-green-50 border border-green-200 p-3 flex gap-2.5">
-                                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                                <p className="text-sm text-green-800">Verification successful! Redirecting...</p>
-                            </div>
+                    </Field>
+
+                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground" aria-live="polite">
+                        <Clock className="size-4" aria-hidden="true" />
+                        {canResend ? (
+                            <span>{resendReadyMessage}</span>
+                        ) : (
+                            <span>Resend in {String(timeLeft).padStart(2, "0")}s</span>
                         )}
+                    </div>
 
-                        <form onSubmit={onSubmit}>
-                            <FieldGroup className="space-y-3">
-                                <Field>
-                                    <FieldLabel className="text-sm font-medium">Verification code</FieldLabel>
-                                    <FieldDescription className="text-xs">Enter the 6-digit code from your SMS.</FieldDescription>
-                                    
-                                    <OTPInputDefaultPreview
-                                        ref={inputRef}
-                                        value={otpValue}
-                                        onChange={onOtpChange}
-                                        disabled={isSuccess || isVerifying}
-                                    />
-                                </Field>
-
-                                <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
-                                    <Clock className="w-4 h-4" />
-                                    {canResend ? <span>Code expired. You can resend now.</span> : <span>Resend in {String(timeLeft).padStart(2, "0")}s</span>}
-                                </div>
-
-                                <Button type="submit" className="w-full h-10 mt-1" disabled={isVerifying || isSuccess || otpValue.length !== 6}>
-                                    {buttonText}
-                                </Button>
-                            </FieldGroup>
-                        </form>
-                    </CardContent>
-                </Card>
-
-                <div className="text-center text-sm">
-                    <Button type="button" variant="link" onClick={onResend} disabled={!canResend || isResending || isVerifying} className="h-auto p-0">
-                        Didn&apos;t receive the code? {isResending ? "Sending OTP now..." : (canResend ? "Resend" : "Wait")}
+                    <Button type="submit" className="mt-1 h-10 w-full" disabled={isSubmitDisabled}>
+                        {submitText}
                     </Button>
-                </div>
+                </FieldGroup>
+            </form>
+
+            <div className="mt-4 text-center text-sm">
+                <Button
+                    type="button"
+                    variant="link"
+                    onClick={onResend}
+                    disabled={!canResend || isResending || isSubmitting}
+                    className="h-auto p-0"
+                >
+                    {resendPrompt} {resendText}
+                </Button>
             </div>
-        </AuthLayout>
+        </div>
     )
 }

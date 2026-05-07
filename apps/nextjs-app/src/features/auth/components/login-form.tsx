@@ -15,9 +15,9 @@ import {
   loginPhoneSchema,
   emailLoginSchema,
   type LoginInput
-} from "@/features/auth/validations"
+} from "@/features/auth/schemas"
 import { useServerAction } from "@/hooks/useServerAction"
-import { loginAsync } from "@/features/auth/actions"
+import { loginAsync } from "@/features/auth/actions/auth.actions"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { handleFormServerErrors } from "@/features/common/utils/form-errors"
 import { PhoneInputField } from "@/components/ui/phone-input"
@@ -56,9 +56,9 @@ export function LoginForm() {
     <div className="w-full">
       {/* Server Error Banner */}
       {rootError && (
-        <div className="mb-3 rounded bg-red-50 border border-red-200 p-2.5 flex gap-2">
-          <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-red-900">{rootError}</p>
+        <div className="mb-3 rounded bg-destructive/10 border border-destructive/20 p-2.5 flex gap-2">
+          <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+          <p className="text-xs text-destructive">{rootError}</p>
         </div>
       )}
 
@@ -110,10 +110,7 @@ export function LoginForm() {
                 <FieldLabel htmlFor="login-password" className="text-xs font-medium">
                   Password
                 </FieldLabel>
-                <Link
-                  href="/auth/forgot-password"
-                  className="text-xs text-blue-600 hover:text-blue-700 hover:underline"
-                >
+                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
                   Forgot?
                 </Link>
               </div>
@@ -148,9 +145,9 @@ export function LoginForm() {
       {/* Sign up and email link */}
       <div className="space-y-2 mt-4">
         <div className="text-center text-sm">
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/register" className="text-blue-600 hover:text-blue-700 font-medium">
+            <Link href="/auth/register" className="text-primary font-medium hover:underline">
               Sign up
             </Link>
           </p>
@@ -166,7 +163,7 @@ export function LoginForm() {
                 form.reset()
                 form.clearErrors()
               }}
-              className="text-blue-600 hover:text-blue-700 hover:underline"
+              className="text-primary hover:underline"
             >
               Sign in with email
             </button>
@@ -183,7 +180,7 @@ export function LoginForm() {
                 form.reset()
                 form.clearErrors()
               }}
-              className="text-blue-600 hover:text-blue-700 hover:underline"
+              className="text-primary hover:underline"
             >
               Sign in with phone
             </button>
