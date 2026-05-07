@@ -32,11 +32,7 @@ const HeroSection = ({ videoUrl }: { videoUrl: string }) => (
         )}
 
         {/* Left gradient overlay - responsive */}
-        <div
-            className="absolute inset-0 z-1"
-            style={{
-                background: 'linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.3) 100%)'
-            }}/>
+        <div className="hero-scrim absolute inset-0 z-1"/>
 
         {/* Content - Left aligned, responsive */}
         <div className="relative z-10 w-full h-full flex items-center">
@@ -45,20 +41,20 @@ const HeroSection = ({ videoUrl }: { videoUrl: string }) => (
                     <div className="max-w-2xl">
                         {/* Label - smaller on mobile */}
                         <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                            <div className="w-2 h-2 rounded-full bg-white/50"></div>
-                            <p className="text-white/60 text-xs sm:text-sm font-medium">Join 50,000+ athletes
+                            <div className="w-2 h-2 rounded-full bg-overlay-foreground/50"></div>
+                            <p className="text-overlay-foreground/60 text-xs sm:text-sm font-medium">Join 50,000+ athletes
                                 worldwide</p>
                         </div>
 
                         {/* Title - responsive sizing */}
-                        <h1 className="font-heading text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
+                        <h1 className="font-heading text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-overlay-foreground mb-4 sm:mb-6 leading-tight">
                             Your Fitness
                             <br/>
                             Community Awaits
                         </h1>
 
                         {/* Description - responsive sizing */}
-                        <p className="text-white/80 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 leading-relaxed max-w-xl">
+                        <p className="text-overlay-muted text-sm sm:text-base md:text-lg mb-6 sm:mb-8 leading-relaxed max-w-xl">
                             Connect with thousands of fitness enthusiasts. Track your progress, join challenges, share
                             achievements, and reach your goals faster with a supportive community.
                         </p>
@@ -66,20 +62,20 @@ const HeroSection = ({ videoUrl }: { videoUrl: string }) => (
                         {/* Features list - responsive grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-10 max-w-sm">
                             <div className="flex items-center gap-2">
-                                <div className="w-1 h-4 bg-white/70 rounded-full shrink-0"></div>
-                                <span className="text-white/80 text-xs sm:text-sm font-medium">Real-time Tracking</span>
+                                <div className="w-1 h-4 bg-overlay-foreground/70 rounded-full shrink-0"></div>
+                                <span className="text-overlay-muted text-xs sm:text-sm font-medium">Real-time Tracking</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-1 h-4 bg-white/70 rounded-full shrink-0"></div>
-                                <span className="text-white/80 text-xs sm:text-sm font-medium">Live Challenges</span>
+                                <div className="w-1 h-4 bg-overlay-foreground/70 rounded-full shrink-0"></div>
+                                <span className="text-overlay-muted text-xs sm:text-sm font-medium">Live Challenges</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-1 h-4 bg-white/70 rounded-full shrink-0"></div>
-                                <span className="text-white/80 text-xs sm:text-sm font-medium">Community Support</span>
+                                <div className="w-1 h-4 bg-overlay-foreground/70 rounded-full shrink-0"></div>
+                                <span className="text-overlay-muted text-xs sm:text-sm font-medium">Community Support</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-1 h-4 bg-white/70 rounded-full shrink-0"></div>
-                                <span className="text-white/80 text-xs sm:text-sm font-medium">Exclusive Rewards</span>
+                                <div className="w-1 h-4 bg-overlay-foreground/70 rounded-full shrink-0"></div>
+                                <span className="text-overlay-muted text-xs sm:text-sm font-medium">Exclusive Rewards</span>
                             </div>
                         </div>
 
@@ -87,13 +83,13 @@ const HeroSection = ({ videoUrl }: { videoUrl: string }) => (
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                             <Button
                                 size="sm"
-                                className="gap-2 bg-white text-black hover:bg-white/90 font-semibold transition-all text-sm sm:text-base"
+                                className="gap-2 bg-overlay-foreground text-overlay hover:bg-overlay-foreground/90 font-semibold transition-all text-sm sm:text-base"
                             >
                                 Start Free <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4"/>
                             </Button>
                             <Button
                                 size="sm"
-                                className="gap-2 bg-white/10 text-white border border-white/30 hover:bg-white/20 font-semibold transition-all backdrop-blur-sm text-sm sm:text-base"
+                                className="gap-2 border border-overlay-border bg-overlay-subtle text-overlay-foreground hover:bg-overlay-foreground/20 font-semibold transition-all backdrop-blur-sm text-sm sm:text-base"
                             >
                                 Learn More
                             </Button>
@@ -105,7 +101,7 @@ const HeroSection = ({ videoUrl }: { videoUrl: string }) => (
 
         {/* Scroll indicator - hidden on small screens */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 hidden sm:block">
-            <div className="animate-bounce text-white/40">
+            <div className="animate-bounce text-overlay-foreground/40">
                 <ChevronRight className="w-6 h-6 rotate-90"/>
             </div>
         </div>
@@ -455,11 +451,12 @@ const CTASection = () => (
                 Join thousands of athletes already using TalosGym. Start your free trial today, no credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <Button size="sm" variant="secondary" className="gap-2 text-xs sm:text-sm md:text-base">
+                <Button size="sm" 
+                        className="gap-2 bg-primary-foreground text-primary hover:bg-primary-foreground/90 text-xs sm:text-sm md:text-base">
                     Start Free Trial <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4"/>
                 </Button>
                 <Button size="sm" variant="outline"
-                        className="gap-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 text-xs sm:text-sm md:text-base">
+                        className="gap-2 bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 text-xs sm:text-sm md:text-base">
                     Schedule Demo
                 </Button>
             </div>

@@ -486,7 +486,7 @@ function MembershipSelectionStep({
                             </div>
                         )}
                         {stepTwoData.billingType === "yearly" && stepTwoData.paymentOption === "installment" && (
-                            <div className="flex justify-between text-orange-600">
+                            <div className="flex justify-between text-warning">
                                 <span>Installment Fee (5%):</span>
                                 <span>+{(((stepTwoData.membership?.basePrice || 0 + clubPrice) * 12 * 0.9) * 0.05).toFixed(2)}</span>
                             </div>
@@ -572,9 +572,8 @@ function PhoneVerificationStep({
                     )}
                 </div>
 
-                <div
-                    className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                    <p className="text-sm text-blue-900 dark:text-blue-200">
+                <div className="rounded-lg border border-primary/25 bg-primary/10 p-4">
+                    <p className="text-sm text-primary">
                         ℹ️ You&apos;ll receive a 6-digit verification code via SMS. This helps us secure your account.
                     </p>
                 </div>
@@ -700,5 +699,3 @@ export default function GetStartedPage() {
         </div>
     );
 }
-
-
