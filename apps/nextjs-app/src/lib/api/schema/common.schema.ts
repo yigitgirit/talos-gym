@@ -51,7 +51,6 @@ export const IdentifierSchema = NonBlankStringSchema;
 export const TokenSchema = z.string().trim().min(1);
 export const ReferenceIdSchema = z.string().trim().min(1);
 export const OtpCodeSchema = z.string().trim().min(1);
-export const AddressSchema = z.string().max(255);
 
 // --- Shared Enums ---
 export const GenderSchema = z.enum(['NOT_SPECIFIED', 'MALE', 'FEMALE', 'EITHER'], {
@@ -80,21 +79,28 @@ export const ApiErrorResponseSchema = z.object({
 export type ApiErrorResponse = z.infer<typeof ApiErrorResponseSchema>;
 
 // --- Pagination DTOs ---
+export const PageRequestSchema = z.object({
+    page: z.coerce.number().int().nonnegative().optional(),
+    size: z.coerce.number().int().positive().optional(),
+    sort: z.string().optional(),
+});
+export type PageRequest = z.infer<typeof PageRequestSchema>;
+
 export const PageMetadataSchema = z.object({
-    size: z.number().int().nonnegative(),
-    totalElements: z.number().int().nonnegative(),
+    pageSize: z.coerce.number().int().nonnegative(),
+    totalItems: z.coerce.number().int().nonnegative(),
     totalPages: z.number().int().nonnegative(),
-    number: z.number().int().nonnegative(),
+    currentPage: z.number().int().nonnegative(),
 });
 export type PageMetadata = z.infer<typeof PageMetadataSchema>;
 
 export type PagedData<T> = {
-    content: T[];
-    page: PageMetadata;
+    items: T[];
+    metadata: PageMetadata;
 };
 
 export const createPagedDataSchema = <TItem extends z.ZodTypeAny>(itemSchema: TItem) =>
     z.object({
-        content: z.array(itemSchema),
-        page: PageMetadataSchema,
+        items: z.array(itemSchema),
+        metadata: PageMetadataSchema,
     });

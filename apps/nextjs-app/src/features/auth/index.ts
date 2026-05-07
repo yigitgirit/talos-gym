@@ -2,8 +2,8 @@
 export type { AuthState } from "./types"
 
 // Schemas
-export { loginSchema, registerSchema } from "./validations"
-export type { LoginInput, RegisterInput } from "./validations"
+export { loginSchema, registerSchema } from "./schemas"
+export type { LoginInput, RegisterInput } from "./schemas"
 
 // Store
 export { useAuthStore } from "./store"

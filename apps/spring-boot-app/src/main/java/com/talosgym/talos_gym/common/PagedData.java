@@ -21,17 +21,17 @@ import java.util.List;
 public class PagedData<T> {
 
     @Schema(description = "List of items in the current page")
-    private List<T> content;
+    private List<T> items;
 
     @Schema(description = "Pagination information")
-    private PageMetadata page;
+    private PageMetadata metadata;
 
     /**
      * Maps a standard Spring Data Page to this PagedResponse.
      */
     public PagedData(Page<T> springPage) {
-        this.content = springPage.getContent();
-        this.page = new PageMetadata(
+        this.items = springPage.getContent();
+        this.metadata = new PageMetadata(
                 springPage.getSize(),
                 springPage.getTotalElements(),
                 springPage.getTotalPages(),
@@ -54,15 +54,15 @@ public class PagedData<T> {
     public static class PageMetadata {
 
         @Schema(description = "Number of items per page", example = "20")
-        private int size;
+        private int pageSize;
 
         @Schema(description = "Total number of elements across all pages", example = "100")
-        private long totalElements;
+        private long totalItems;
 
         @Schema(description = "Total number of pages", example = "5")
         private int totalPages;
 
         @Schema(description = "Current page number (zero-based index)", example = "0")
-        private int number;
+        private int currentPage;
     }
 }

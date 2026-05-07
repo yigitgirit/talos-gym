@@ -40,7 +40,7 @@ export function AuthLayout({
   return (
     <div className="w-full min-h-dvh lg:h-dvh flex">
       {/* Left Section - Form */}
-      <div className="w-full lg:w-4/7 flex flex-col bg-white">
+      <div className="w-full lg:w-4/7 flex flex-col bg-background">
         {/* Logo */}
         <div className="shrink-0 p-6 lg:p-8">
           <Logo />
@@ -51,11 +51,11 @@ export function AuthLayout({
           <div className="w-full max-w-md flex flex-col my-auto">
             {/* Header */}
             <div className="mb-3">
-              <h1 className="font-heading text-xl sm:text-2xl font-bold text-gray-900 mb-1">
+              <h1 className="font-heading text-xl sm:text-2xl font-bold text-foreground mb-1">
                 {title}
               </h1>
               {description && (
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   {description}
                 </p>
               )}
@@ -67,14 +67,14 @@ export function AuthLayout({
             </div>
 
             {/* Footer Links */}
-            <div className="mt-2 text-center text-xs text-gray-600">
+            <div className="mt-2 text-center text-xs text-muted-foreground">
               <p>
                 By continuing, you agree to our{" "}
-                <Link href="/terms" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
+                <Link href="/terms" className="text-primary hover:underline font-medium">
                   Terms
                 </Link>
                 {" "}and{" "}
-                <Link href="/privacy" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
+                <Link href="/privacy" className="text-primary hover:underline font-medium">
                   Privacy Policy
                 </Link>
               </p>
@@ -84,21 +84,21 @@ export function AuthLayout({
       </div>
 
       {/* Right Section - Image & Quote */}
-      <div className="hidden lg:flex w-3/7 bg-linear-to-br from-blue-600 to-blue-800 relative overflow-hidden flex-col items-center justify-center p-6 xl:p-8">
+      <div className="relative hidden w-3/7 flex-col items-center justify-center overflow-hidden bg-primary p-6 text-primary-foreground lg:flex xl:p-8">
         {/* Background decorative elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
+          <div className="absolute inset-x-0 top-0 h-32 bg-primary-foreground/10 blur-3xl" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-accent/20 blur-3xl" />
         </div>
 
         {/* Content */}
         <div className="relative z-10 max-w-md text-center">
           {/* Image */}
           <div className="mb-4">
-            <div className="w-56 h-56 xl:w-64 xl:h-64 mx-auto bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 flex items-center justify-center overflow-hidden">
-              <div className="w-full h-full relative bg-linear-to-br from-white/5 to-white/10 flex items-center justify-center">
+            <div className="w-56 h-56 xl:w-64 xl:h-64 mx-auto bg-overlay-subtle backdrop-blur-sm rounded-2xl border border-overlay-border flex items-center justify-center overflow-hidden">
+              <div className="w-full h-full relative bg-linear-to-br from-overlay-foreground/5 to-overlay-subtle flex items-center justify-center">
                 <svg
-                  className="w-32 h-32 text-white/40"
+                  className="w-32 h-32 text-overlay-foreground/40"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -110,19 +110,19 @@ export function AuthLayout({
 
           {/* Quote */}
           <div className="space-y-4">
-              <blockquote className="text-lg sm:text-xl xl:text-2xl font-semibold text-white leading-tight">
+              <blockquote className="text-lg sm:text-xl xl:text-2xl font-semibold text-overlay-foreground leading-tight">
               &ldquo;{randomQuote.text}&rdquo;
             </blockquote>
-            <p className="text-blue-100 font-medium">
+            <p className="font-medium text-primary-foreground/80">
               {randomQuote.author}
             </p>
           </div>
 
           {/* Bottom accent */}
           <div className="mt-6 flex justify-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-white/40" />
-            <div className="w-2 h-2 rounded-full bg-white/60" />
-            <div className="w-2 h-2 rounded-full bg-white/40" />
+            <div className="w-2 h-2 rounded-full bg-overlay-foreground/40" />
+            <div className="w-2 h-2 rounded-full bg-overlay-foreground/60" />
+            <div className="w-2 h-2 rounded-full bg-overlay-foreground/40" />
           </div>
         </div>
       </div>

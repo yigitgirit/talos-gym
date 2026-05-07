@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuthStore } from '@/features/auth/store'
-import { logoutAsync } from '../actions'
+import { logoutAsync } from '../actions/auth.actions'
 import { useShallow } from 'zustand/react/shallow'
 import { useServerAction } from '@/hooks/useServerAction'
 

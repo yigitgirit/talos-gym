@@ -7,7 +7,7 @@ import {AuthProvider} from "@/components/providers/auth-provider"
 import {TooltipProvider} from "@/components/ui/tooltip"
 import {Toaster} from "@/components/ui/sonner"
 import React from "react";
-import {initializeSessionAsync} from "@/features/auth/actions";
+import {initializeSessionAsync} from "@/features/auth/actions/auth.actions";
 
 const oxaniumHeading = Oxanium({subsets: ['latin'], variable: '--font-heading'});
 const inter = Inter({subsets: ['latin'], variable: '--font-sans'});
@@ -40,7 +40,7 @@ export default async function RootLayout({
         <body className="min-h-full flex flex-col">
         <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
         >

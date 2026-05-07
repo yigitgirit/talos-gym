@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
-import { registerSchema, type RegisterInput } from "@/features/auth/validations"
+import { registerSchema, type RegisterInput } from "@/features/auth/schemas"
 import { useServerAction } from "@/hooks/useServerAction"
-import { registerAsync } from "@/features/auth/actions"
+import { registerAsync } from "@/features/auth/actions/auth.actions"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { usePendingRegistrationStore } from "@/features/auth/store/pending-registration"
 import { handleFormServerErrors } from "@/features/common/utils/form-errors"
@@ -61,9 +61,9 @@ export function RegisterForm() {
     <div className="w-full">
       {/* Server Error Banner */}
       {rootError && (
-        <div className="mb-3 rounded bg-red-50 border border-red-200 p-2.5 flex gap-2">
-          <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-red-900">{rootError}</p>
+        <div className="mb-3 rounded bg-destructive/10 border border-destructive/20 p-2.5 flex gap-2">
+          <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+          <p className="text-xs text-destructive">{rootError}</p>
         </div>
       )}
 
@@ -268,9 +268,9 @@ export function RegisterForm() {
 
       {/* Sign in link */}
       <div className="text-center text-sm mt-4">
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-medium">
+          <Link href="/auth/login" className="text-primary font-medium hover:underline">
             Sign in
           </Link>
         </p>

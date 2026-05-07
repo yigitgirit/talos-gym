@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { verifyOTPAsync, resendOTPAsync } from "@/features/auth/actions"
+import { verifyOTPAsync, resendOTPAsync } from "@/features/auth/actions/auth.actions"
 import { useServerAction } from "@/hooks/useServerAction"
 import { useCountdownTimer } from "@/features/common/hooks/useCountdownTimer"
 import { useVisibilityAutoFocus } from "@/features/common/hooks/useVisibilityAutoFocus"
@@ -11,6 +11,7 @@ import { maskPhone } from "@/features/common/utils/formatters"
 import { OTPVerificationForm } from "./otp-verification-form"
 import {toast} from "sonner";
 import { getErrorMessage } from "@/constants/error-codes";
+import { AuthLayout } from "@/features/auth/components/auth-layout"
 
 interface OTPVerificationPageProps {
     referenceId: string;
@@ -38,6 +39,7 @@ export function OTPVerificationPage({ referenceId }: Readonly<OTPVerificationPag
         onSuccess: () => {
             resetTimer()
             setOtpValue("")
+            verifyAction.reset()
             otpInputRef.current?.focus()
             toast.success("Verification code resent successfully!");
         },
@@ -46,7 +48,14 @@ export function OTPVerificationPage({ referenceId }: Readonly<OTPVerificationPag
         }
     });
 
-    const handleSubmit = (e: React.SubmitEvent) => {
+    const handleOtpChange = useCallback((value: string) => {
+        setOtpValue(value)
+        if (verifyAction.error) {
+            verifyAction.reset()
+        }
+    }, [verifyAction])
+
+    const handleSubmit = useCallback((e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         const code = otpValue.trim()
 
@@ -59,32 +68,44 @@ export function OTPVerificationPage({ referenceId }: Readonly<OTPVerificationPag
             code,
             purpose: "PHONE_VERIFICATION"
         });
+    }, [otpValue, referenceId, verifyAction])
 
-        console.log("Verifying OTP - referenceId:", referenceId, "code:", code)
-    }
+    const handleResend = useCallback(() => {
+        if (!canResend || resendAction.isPending || verifyAction.isPending) {
+            return
+        }
+
+        resendAction.execute({ identifier: referenceId })
+    }, [canResend, referenceId, resendAction, verifyAction.isPending])
     
     const verifyError = verifyAction.error;
 
-    const rootErrorMessage = verifyError
-        ? getErrorMessage(verifyError.code, verifyError.message) 
+    const fieldErrorMessage = verifyError?.details?.find(detail => detail.field === "code")?.message;
+    const rootErrorMessage = verifyError && !fieldErrorMessage
+        ? getErrorMessage(verifyError.code, verifyError.message)
         : undefined;
-    const fieldErrorMessage = verifyError?.details?.find(d => d.field === 'code')?.message;
+    const maskedPhone = useMemo(() => maskPhone(referenceId), [referenceId])
+    const statusMessage = success ? "Verification successful! Redirecting..." : rootErrorMessage
+    const statusTone = success ? "success" : "error"
 
     return (
-        <OTPVerificationForm
-            maskedPhone={maskPhone(referenceId)} // referenceId is the phone number
-            otpValue={otpValue}
-            onOtpChange={setOtpValue}
-            onSubmit={handleSubmit}
-            onResend={() => resendAction.execute({ identifier: referenceId })}
-            isVerifying={verifyAction.isPending}
-            isResending={resendAction.isPending}
-            isSuccess={success}
-            canResend={canResend}
-            timeLeft={timeLeft}
-            rootError={rootErrorMessage}
-            fieldError={fieldErrorMessage}
-            inputRef={otpInputRef}
-        />
+        <AuthLayout title="Verify your number" description={`We've sent a 6-digit code to ${maskedPhone}`}>
+            <OTPVerificationForm
+                value={otpValue}
+                onValueChange={handleOtpChange}
+                onSubmit={handleSubmit}
+                onResend={handleResend}
+                isSubmitting={verifyAction.isPending}
+                isResending={resendAction.isPending}
+                isComplete={success}
+                canResend={canResend}
+                timeLeft={timeLeft}
+                statusMessage={statusMessage}
+                statusTone={statusTone}
+                fieldError={fieldErrorMessage}
+                inputRef={otpInputRef}
+                description="Enter the 6-digit code from your SMS."
+            />
+        </AuthLayout>
     )
 }

@@ -1,33 +1,33 @@
 /**
  * Masks a phone number, leaving only the last 4 digits visible.
- * Example: "+905551234567" -> "********4567"
+ * Example: "+905551234567" -> "+∗∗∗∗∗∗∗∗4567"
  */
 export function maskPhone(phoneNumber: string | number): string {
     const phone = String(phoneNumber).trim();
 
-    if (!phone) {
-        return "";
+    if (!phone || phone.length <= 4) {
+        return phone;
     }
 
-    return phone.replaceAll(/(\d)(?=\d{4})/g, "*");
+    return phone.replace(/\d(?!\d{0,3}$)/g, "∗");
 }
 
 /**
  * Masks an email address for privacy.
- * Example: "yigit.girit@example.com" -> "yi***t@example.com"
+ * Example: "yigit.girit@example.com" -> "yi∗∗∗t@example.com"
  */
 export function maskEmail(email: string): string {
     if (!email?.includes("@")) return email;
 
     const [localPart, domain] = email.split("@");
     if (localPart.length <= 2) {
-        return `${localPart}***@${domain}`;
+        return `${localPart}∗∗∗@${domain}`;
     }
 
     const firstChars = localPart.substring(0, 2);
     const lastChar = localPart.substring(localPart.length - 1);
     
-    return `${firstChars}***${lastChar}@${domain}`;
+    return `${firstChars}∗∗∗${lastChar}@${domain}`;
 }
 
 /**
