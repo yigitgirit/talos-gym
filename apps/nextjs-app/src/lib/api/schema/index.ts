@@ -4,3 +4,4 @@ export * from './user.schema';
 export * from './verification.schema';
 export * from './payment.schema';
 export * from './notification.schema';
+export * from './club.schema';

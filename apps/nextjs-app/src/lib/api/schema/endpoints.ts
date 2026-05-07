@@ -16,7 +16,15 @@ import {
     UserBanRequest,
     UserNotificationPreferenceDto,
     UserResponse,
-    VerifyOtpRequest
+    VerifyOtpRequest,
+    PaymentRequest,
+    ClubResponse,
+    ClubCreateRequest,
+    ClubUpdateRequest,
+    OperatingHourDto,
+    ScheduleOverrideResponse,
+    ScheduleOverrideRequest,
+    UpdateOperatingHoursRequest
 } from "@/lib/api/schema";
 import type { EndpointOperation } from "@/lib/api/core/route-types";
 
@@ -31,10 +39,10 @@ export type ApiEndpoints = {
         POST: EndpointOperation<LoginResponse, LoginRequest>;
     };
     'api/auth/register': {
-        POST: EndpointOperation<void, RegisterRequest>;
+        POST: EndpointOperation<string, RegisterRequest>;
     };
     'api/auth/logout': {
-        POST: EndpointOperation<void>;
+        POST: EndpointOperation<string>;
     };
     'api/auth/refresh': {
         POST: EndpointOperation<RefreshResponse, RefreshRequest>;
@@ -43,7 +51,7 @@ export type ApiEndpoints = {
         POST: EndpointOperation<{ resetToken: string }, VerifyOtpRequest>;
     };
     'api/auth/reset-password-submit': {
-        POST: EndpointOperation<string, ResetPasswordRequest>;
+        POST: EndpointOperation<void, ResetPasswordRequest>;
     };
     'api/auth/forgot-password': {
         POST: EndpointOperation<string, ForgotPasswordRequest>;
@@ -57,7 +65,7 @@ export type ApiEndpoints = {
         POST: EndpointOperation<string, CodeConfirmRequest>;
     };
     'api/verification/confirm-link': {
-        GET: EndpointOperation<string>;
+        GET: EndpointOperation<string>; // Query params: token, referenceId, purpose
     };
 
     // Current User Endpoints
@@ -80,24 +88,24 @@ export type ApiEndpoints = {
     };
 
     // Admin User Endpoints
-    'admin/users': {
-        GET: EndpointOperation<PagedData<UserResponse>>;
+    'api/management/users': {
+        GET: EndpointOperation<PagedData<UserResponse>>; // Query params: page, size, search
     };
-    'admin/users/:id': {
+    'api/management/users/:id': {
         GET: EndpointOperation<UserResponse>;
         PUT: EndpointOperation<UserResponse, UpdateUserRequest>;
         DELETE: EndpointOperation<void>;
     };
-    'admin/users/:id/status': {
-        PATCH: EndpointOperation<void>;
+    'api/management/users/:id/status': {
+        PATCH: EndpointOperation<void>; // Query params: status
     };
-    'admin/users/:id/roles': {
+    'api/management/users/:id/roles': {
         PUT: EndpointOperation<UserResponse, Role[]>;
     };
-    'admin/users/:id/ban': {
+    'api/management/users/:id/ban': {
         POST: EndpointOperation<void, UserBanRequest>;
     };
-    'admin/users/:id/unban': {
+    'api/management/users/:id/unban': {
         POST: EndpointOperation<void>;
     };
 
@@ -110,5 +118,46 @@ export type ApiEndpoints = {
     'api/notification-preferences': {
         GET: EndpointOperation<UserNotificationPreferenceDto[]>;
         PUT: EndpointOperation<UserNotificationPreferenceDto, UpdateNotificationPreferenceRequest>;
+    };
+
+    // Common Endpoints
+    'common/timezones': {
+        GET: EndpointOperation<string[]>;
+    };
+
+    // Club Public Endpoints
+    'api/clubs': {
+        GET: EndpointOperation<PagedData<ClubResponse>>; // Query params: search, city, district, active, page, size
+    };
+    'api/clubs/:id': {
+        GET: EndpointOperation<ClubResponse>;
+    };
+    'api/clubs/slug/:slug': {
+        GET: EndpointOperation<ClubResponse>;
+    };
+    'api/clubs/:clubId/schedule/operating-hours': {
+        GET: EndpointOperation<OperatingHourDto[]>;
+    };
+    'api/clubs/:clubId/schedule/overrides': {
+        GET: EndpointOperation<ScheduleOverrideResponse[]>; // Query params: startDate, endDate
+    };
+
+    // Club Management Endpoints
+    'api/management/clubs': {
+        POST: EndpointOperation<ClubResponse, ClubCreateRequest>;
+    };
+    'api/management/clubs/:id': {
+        PUT: EndpointOperation<ClubResponse, ClubUpdateRequest>;
+        DELETE: EndpointOperation<void>;
+    };
+    'api/management/clubs/:clubId/schedule/operating-hours': {
+        PUT: EndpointOperation<OperatingHourDto[], UpdateOperatingHoursRequest>;
+    };
+    'api/management/clubs/:clubId/schedule/overrides': {
+        POST: EndpointOperation<ScheduleOverrideResponse, ScheduleOverrideRequest>;
+    };
+    'api/management/clubs/:clubId/schedule/overrides/:overrideId': {
+        PUT: EndpointOperation<ScheduleOverrideResponse, ScheduleOverrideRequest>;
+        DELETE: EndpointOperation<void>;
     };
 };

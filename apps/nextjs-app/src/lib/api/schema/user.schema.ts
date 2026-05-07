@@ -6,7 +6,6 @@ import {
     PasswordSchema,
     NameSchema,
     OptionalNameSchema,
-    AddressSchema,
     NonBlankStringSchema,
     ChangePasswordSchema,
     createPagedDataSchema, PhoneNumberSchema
@@ -41,7 +40,7 @@ export const UpdateUserRequestSchema = z.object({
     firstName: OptionalNameSchema,
     lastName: OptionalNameSchema,
     gender: GenderSchema.optional(),
-    address: AddressSchema.optional(),
+    address: z.string().max(255).optional(),
 });
 export type UpdateUserRequest = z.infer<typeof UpdateUserRequestSchema>;
 

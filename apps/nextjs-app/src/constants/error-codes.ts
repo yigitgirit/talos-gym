@@ -85,7 +85,6 @@ export const ERROR_MESSAGES: Record<string, string> = {
   [ERROR_CODES.PAYMENT_PROCESSING_ERROR]: "Payment is being processed. Please wait a moment and try again.",
 
   // E41xx - Verification errors
-  [ERROR_CODES.VERIFICATION_FAILED]: "The verification code is invalid or expired. Please try again or request a new code.",
   [ERROR_CODES.VERIFICATION_EXPIRED]: "The verification code has expired. Please request a new code.",
   [ERROR_CODES.VERIFICATION_NOT_FOUND]: "The verification code was not found. Please request a new code.",
   [ERROR_CODES.VERIFICATION_ALREADY_COMPLETED]: "This account has already been verified.",
