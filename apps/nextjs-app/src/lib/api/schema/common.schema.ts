@@ -91,7 +91,6 @@ export const PageMetadataSchema = z.object({
     totalItems: z.coerce.number().int().nonnegative(),
     totalPages: z.number().int().nonnegative(),
     currentPage: z.number().int().nonnegative(),
-    sort: z.array(z.string()).optional(),
 });
 export type PageMetadata = z.infer<typeof PageMetadataSchema>;
 
