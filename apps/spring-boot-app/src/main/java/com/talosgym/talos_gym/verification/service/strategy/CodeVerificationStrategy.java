@@ -54,7 +54,7 @@ public class CodeVerificationStrategy implements IVerificationStrategy{
     @Override
     public void validate(String storedSecret, String inputSecret, PasswordEncoder passwordEncoder) {
         if (!passwordEncoder.matches(inputSecret, storedSecret)) {
-            throw new VerificationFailedException("Invalid verification code");
+            throw new VerificationFailedException("Invalid or expired verification code.");
         }
     }
 }

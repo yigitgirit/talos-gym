@@ -11,6 +11,7 @@ import com.talosgym.talos_gym.auth.service.TokenBlacklistService;
 import com.talosgym.talos_gym.common.util.ContactFormatUtil;
 import com.talosgym.talos_gym.exception.ErrorCode;
 import com.talosgym.talos_gym.exception.auth.*;
+import com.talosgym.talos_gym.exception.client.BusinessException;
 import com.talosgym.talos_gym.exception.client.DuplicateResourceException;
 import com.talosgym.talos_gym.exception.client.ResourceNotFoundException;
 import com.talosgym.talos_gym.notification.model.NotificationChannel;
@@ -124,7 +125,7 @@ public class AuthServiceImpl implements IAuthService {
         if (ContactFormatUtil.isEmail(identifier)) {
             VerificationStatus emailStatus = user.getEmailVerificationStatus(securityProperties.getEmailVerificationValidityDays());
             if (emailStatus != VerificationStatus.VERIFIED) {
-                throw new InvalidInputException("Bu e-posta adresi henüz doğrulanmamış. Lütfen telefon numaranız ile giriş yapın veya e-postanızı doğrulayın.");
+                throw new BusinessException("Email not verified. Please verify your email before logging in.", ErrorCode.EMAIL_NOT_VERIFIED);
             }
         }
 

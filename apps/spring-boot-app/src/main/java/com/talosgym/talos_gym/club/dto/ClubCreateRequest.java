@@ -1,6 +1,5 @@
 package com.talosgym.talos_gym.club.dto;
 
-import com.talosgym.talos_gym.common.annotation.ValidPhotoUrl;
 import com.talosgym.talos_gym.common.annotation.ValidTimeZone;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,7 +18,6 @@ public record ClubCreateRequest(
         @Size(max = 10, message = "Photo URLs cannot exceed 10 items")
         List<
                 @NotBlank(message = "URL cannot be blank")
-                @ValidPhotoUrl
                 @Size(max = 500, message = "URL cannot exceed 500 characters")
                         String
                 > photoUrls,

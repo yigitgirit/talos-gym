@@ -10,7 +10,7 @@ public class DuplicateResourceException extends BaseApiException {
 
     public DuplicateResourceException(String resourceName, String field, Object value, ErrorCode errorCode) {
         super(
-                String.format("%s already exists with %s : '%s'", resourceName, field, value),
+                String.format("%s already exists with %s: '%s'", resourceName, field, value),
                 errorCode
         );
     }

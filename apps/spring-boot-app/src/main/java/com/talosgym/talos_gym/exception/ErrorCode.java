@@ -14,6 +14,7 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND("E1003", "Refresh token not found", HttpStatus.NOT_FOUND),
     PHONE_NUMBER_ALREADY_EXISTS("E1004", "Phone number already exists", HttpStatus.CONFLICT),
     USER_NOT_VERIFIED("E1005", "User account has not been verified.", HttpStatus.FORBIDDEN),
+    EMAIL_NOT_VERIFIED("E1006", "The provided email address is not verified.", HttpStatus.FORBIDDEN),
 
     // =====================================================================
     // 2. AUTHENTICATION & SECURITY (E2xxx)
