@@ -1,7 +1,6 @@
 services:
   database:
     image: postgres:17-alpine
-    restart: always
     container_name: talosgym-postgres
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
@@ -22,7 +21,6 @@ services:
 
   redis:
     image: redis:alpine
-    restart: always
     container_name: talosgym-redis
     ports:
       - "6379:6379"
