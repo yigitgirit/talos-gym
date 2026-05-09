@@ -12,6 +12,7 @@ export const ERROR_CODES = {
   REFRESH_TOKEN_NOT_FOUND: "E1003",
   PHONE_NUMBER_ALREADY_EXISTS: "E1004",
   USER_NOT_VERIFIED: "E1005",
+  EMAIL_NOT_VERIFIED: "E1006",
 
   // Authentication & Security (E2xxx)
   UNAUTHORIZED: "E2001",
@@ -59,7 +60,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   [ERROR_CODES.EMAIL_ALREADY_EXISTS]: "This email address is already registered. Please use a different email or try logging in.",
   [ERROR_CODES.REFRESH_TOKEN_NOT_FOUND]: "Your session has expired. Please log in again.",
   [ERROR_CODES.PHONE_NUMBER_ALREADY_EXISTS]: "This phone number is already registered. Please use a different phone number.",
-  [ERROR_CODES.USER_NOT_VERIFIED]: "Your account has not been verified yet. Please check your email to complete verification.",
+  [ERROR_CODES.USER_NOT_VERIFIED]: "Your account has not been verified yet. Please check your phone or email to complete verification.",
+  [ERROR_CODES.EMAIL_NOT_VERIFIED]: "The email address you provided is not verified. Please verify your email before logging in.",
 
   // E2xxx - Authentication errors
   [ERROR_CODES.UNAUTHORIZED]: "Authentication required. Please log in.",
@@ -103,4 +105,3 @@ export const ERROR_MESSAGES: Record<string, string> = {
 export const getErrorMessage = (code: string, fallback?: string): string => {
   return ERROR_MESSAGES[code] || fallback || "An error occurred. Please try again."
 }
-

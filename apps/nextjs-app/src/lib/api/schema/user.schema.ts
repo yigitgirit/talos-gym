@@ -40,7 +40,6 @@ export const UpdateUserRequestSchema = z.object({
     firstName: OptionalNameSchema,
     lastName: OptionalNameSchema,
     gender: GenderSchema.optional(),
-    address: z.string().max(255).optional(),
 });
 export type UpdateUserRequest = z.infer<typeof UpdateUserRequestSchema>;
 
