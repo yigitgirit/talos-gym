@@ -1,5 +1,5 @@
-import {OTPVerificationContainer} from "@/features/auth/components/otp-verification-container"
+import { OtpVerificationView } from "@/features/auth/components/otp-verification-view"
 
 export default function VerifyOTPPage() {
-    return <OTPVerificationContainer />
+    return <OtpVerificationView />
 }

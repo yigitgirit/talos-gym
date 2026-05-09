@@ -8,6 +8,7 @@ interface AuthLayoutProps {
   readonly children: React.ReactNode
   readonly title: string
   readonly description?: string
+  readonly showTerms?: boolean
 }
 
 const quotes = [
@@ -33,6 +34,7 @@ export function AuthLayout({
   children,
   title,
   description,
+  showTerms = false,
 }: AuthLayoutProps) {
   const quoteIndex = (title.length + (description?.length ?? 0)) % quotes.length
   const randomQuote = quotes[quoteIndex]
@@ -67,18 +69,20 @@ export function AuthLayout({
             </div>
 
             {/* Footer Links */}
-            <div className="mt-2 text-center text-xs text-muted-foreground">
-              <p>
-                By continuing, you agree to our{" "}
-                <Link href="/terms" className="text-primary hover:underline font-medium">
-                  Terms
-                </Link>
-                {" "}and{" "}
-                <Link href="/privacy" className="text-primary hover:underline font-medium">
-                  Privacy Policy
-                </Link>
-              </p>
-            </div>
+            {showTerms && (
+              <div className="mt-4 text-center text-xs text-muted-foreground">
+                <p>
+                  By continuing, you agree to our{" "}
+                  <Link href="/terms" className="text-primary hover:underline font-medium">
+                    Terms
+                  </Link>
+                  {" "}and{" "}
+                  <Link href="/privacy" className="text-primary hover:underline font-medium">
+                    Privacy Policy
+                  </Link>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
