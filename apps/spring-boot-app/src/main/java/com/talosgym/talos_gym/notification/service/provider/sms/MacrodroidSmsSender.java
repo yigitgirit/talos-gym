@@ -4,6 +4,7 @@ import com.talosgym.talos_gym.exception.server.SmsServiceException;
 import com.talosgym.talos_gym.common.util.DataNormalizationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@ConditionalOnProperty(name = "application.sms.provider", havingValue = "macrodroid", matchIfMissing = true)
 public class MacrodroidSmsSender implements SmsSender {
 
     @Value("${macrodroid.webhook.url}")
