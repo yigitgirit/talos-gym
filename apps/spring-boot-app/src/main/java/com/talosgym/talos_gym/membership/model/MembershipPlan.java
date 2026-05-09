@@ -3,12 +3,14 @@ package com.talosgym.talos_gym.membership.model;
 import com.talosgym.talos_gym.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "membership_plans")
+@SQLRestriction("is_deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,4 +32,6 @@ public class MembershipPlan extends BaseEntity {
     )
     @Builder.Default
     private Set<Feature> features = new HashSet<>();
+
+    private boolean isDeleted = false;
 }

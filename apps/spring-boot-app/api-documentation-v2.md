@@ -244,8 +244,8 @@ Creates a new membership plan.
 ```json
 {
   "name": "Standard Plan",
-  "description": "Standard monthly membership",
-  "durationInMonths": 1
+  "isGlobal": true,
+  "featureIds": [1,2,3]
 }
 ```
 

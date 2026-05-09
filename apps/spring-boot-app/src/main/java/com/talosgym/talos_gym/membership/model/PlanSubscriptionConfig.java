@@ -1,7 +1,6 @@
-package com.talosgym.talos_gym.subscription.model;
+package com.talosgym.talos_gym.membership.model;
 
 import com.talosgym.talos_gym.common.model.BaseEntity;
-import com.talosgym.talos_gym.membership.model.MembershipPlan;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
