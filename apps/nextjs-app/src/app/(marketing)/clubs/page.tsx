@@ -31,7 +31,7 @@ export default async function ClubsPage({ searchParams }: Readonly<PageProps>) {
       <section className="w-full pb-12">
         <div className="container max-w-7xl mx-auto px-4">
           <div className="mb-8">
-@            <Suspense fallback={<div className="h-[120px] rounded-xl bg-primary/5 border border-primary/10 animate-pulse" />}>
+            <Suspense fallback={<div className="h-30 rounded-xl bg-primary/5 border border-primary/10 animate-pulse" />}>
               <ClubFilters />
             </Suspense>
           </div>

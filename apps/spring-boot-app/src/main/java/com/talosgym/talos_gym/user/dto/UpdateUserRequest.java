@@ -14,15 +14,11 @@ public record UpdateUserRequest(
         @Pattern(regexp = "^[\\p{L} .'-]+$", message = "Name contains invalid characters")
         String lastName,
 
-        Gender gender,
-
-        @Size(max = 255)
-        String address
+        Gender gender
 ) {
     // Compact constructor for automatic data normalization
     public UpdateUserRequest {
         firstName = DataNormalizationUtil.normalizeName(firstName);
         lastName = DataNormalizationUtil.normalizeName(lastName);
-        if (address != null) address = address.trim();
     }
 }

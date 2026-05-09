@@ -12,13 +12,6 @@ import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { ClubSearchFilters, ClubSearchFiltersSchema, ClubSearchUrl, ClubSearchUrlSchema } from "../schemas";
 import { useUrlFilters } from "@/features/common/hooks/useUrlFilters";
 
-type ClubFilters = {
-    search: string;
-    city: string;
-    district: string;
-    active: "active" | "inactive" | "all";
-}
-
 export function ClubFilters() {
     const { filters, updateFilters, clearFilters, hasAnyFilter } = useUrlFilters({
         schema: ClubSearchUrlSchema,

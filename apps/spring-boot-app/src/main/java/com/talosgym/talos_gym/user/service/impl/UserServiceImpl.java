@@ -160,7 +160,7 @@ public class UserServiceImpl implements IUserService {
         // Send verification link
         VerificationRequest verificationRequest = new VerificationRequest(
                 user.getId(),
-                VerificationType.LINK,
+                VerificationType.CODE,
                 NotificationChannel.EMAIL,
                 VerificationPurpose.EMAIL_CHANGE,
                 null
@@ -200,7 +200,7 @@ public class UserServiceImpl implements IUserService {
 
         VerificationRequest verificationRequest = new VerificationRequest(
                 user.getId(),
-                VerificationType.LINK,
+                VerificationType.CODE,
                 NotificationChannel.EMAIL,
                 VerificationPurpose.EMAIL_VERIFICATION,
                 null

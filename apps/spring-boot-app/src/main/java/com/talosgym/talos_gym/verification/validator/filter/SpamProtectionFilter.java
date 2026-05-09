@@ -35,7 +35,7 @@ public class SpamProtectionFilter implements IVerificationFilter {
         }
 
         if (count != null && count > verificationProperties.getSpam().getMaxRequestsPerHour()) {
-            throw new VerificationFailedException("Too many verification attempts. Please try again later.");
+            throw new VerificationFailedException("Too many attempts. Please try again later.");
         }
     }
 }

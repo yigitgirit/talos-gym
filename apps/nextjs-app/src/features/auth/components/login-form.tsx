@@ -111,7 +111,7 @@ export function LoginForm() {
                   Password
                 </FieldLabel>
                 <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
-                  Forgot?
+                  Forgot my password
                 </Link>
               </div>
               <Input

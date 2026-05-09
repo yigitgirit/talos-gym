@@ -22,6 +22,7 @@ export default function RegisterPage() {
     <AuthLayout
       title="Create account"
       description="Join TalosGym and start your fitness journey"
+      showTerms={true}
     >
       <RegisterForm />
     </AuthLayout>

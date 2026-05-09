@@ -45,7 +45,7 @@ public class LinkVerificationStrategy implements IVerificationStrategy {
     @Override
     public void validate(String storedSecret, String inputSecret, PasswordEncoder passwordEncoder) {
         if (!passwordEncoder.matches(inputSecret, storedSecret)) {
-            throw new VerificationFailedException("Innvalid or expired verification link");
+            throw new VerificationFailedException("Invalid or expired verification link.");
         }
     }
 }
