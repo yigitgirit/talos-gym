@@ -31,7 +31,7 @@ public interface IUserService {
 
     UserResponse createUser(UserCreateRequest request);
 
-    Page<UserResponse> getAllUsers(Pageable pageable, String search);
+    Page<UserResponse> searchUser(Pageable pageable, UserSearchRequest request);
 
     UserResponse getUserById(Long id);
 

@@ -1,39 +1,63 @@
 package com.talosgym.talos_gym.user.repository;
 
+import com.talosgym.talos_gym.user.dto.UserSearchRequest;
+import com.talosgym.talos_gym.user.model.Gender;
+import com.talosgym.talos_gym.user.model.Role;
 import com.talosgym.talos_gym.user.model.User;
+import com.talosgym.talos_gym.user.model.UserStatus;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-import jakarta.persistence.criteria.Predicate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-public class UserSpecifications {
+public final class UserSpecifications {
 
-    public static Specification<User> withSearch(String search) {
-        return (root, query, criteriaBuilder) -> {
-            // Eğer arama metni boşsa, hiçbir filtre uygulama (tüm kayıtları getir)
-            if (!StringUtils.hasText(search)) {
-                return criteriaBuilder.conjunction();
-            }
+    private UserSpecifications() {
+        // Utility class
+    }
 
-            String searchPattern = "%" + search.toLowerCase() + "%";
-            List<Predicate> predicates = new ArrayList<>();
+    public static Specification<User> withDynamicQuery(UserSearchRequest request) {
+        return (root, query, cb) -> {
+            List<Specification<User>> specs = Stream.of(
+                    hasSearch(request.search()),
+                    hasStatus(request.status()),
+                    hasGender(request.gender()),
+                    hasRole(request.role())
+            ).filter(Objects::nonNull).toList();
 
-            // firstName içinde ara
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), searchPattern));
+            Specification<User> filterSpec = Specification.allOf(specs);
 
-            // lastName içinde ara
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), searchPattern));
-
-            // email içinde ara
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), searchPattern));
-
-            // phoneNumber içinde ara (Genelde numerik olsa da String tutuyorsun, like çalışır)
-            predicates.add(criteriaBuilder.like(root.get("phoneNumber"), searchPattern));
-
-            // Predicate'leri 'OR' ile birleştir (Herhangi biri eşleşirse getir)
-            return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+            return filterSpec.toPredicate(root, query, cb);
         };
+    }
+
+    private static Specification<User> hasSearch(String search) {
+        if (!StringUtils.hasText(search)) return null;
+        return (root, query, cb) -> {
+            String searchPattern = "%" + search.toLowerCase() + "%";
+            return cb.or(
+                    cb.like(cb.lower(root.get("firstName")), searchPattern),
+                    cb.like(cb.lower(root.get("lastName")), searchPattern),
+                    cb.like(cb.lower(root.get("email")), searchPattern),
+                    cb.like(root.get("phoneNumber"), searchPattern)
+            );
+        };
+    }
+
+    private static Specification<User> hasStatus(UserStatus status) {
+        if (status == null) return null;
+        return (root, query, cb) -> cb.equal(root.get("status"), status);
+    }
+
+    private static Specification<User> hasGender(Gender gender) {
+        if (gender == null) return null;
+        return (root, query, cb) -> cb.equal(root.get("gender"), gender);
+    }
+
+    private static Specification<User> hasRole(Role role) {
+        if (role == null) return null;
+        return (root, query, cb) -> cb.isMember(role, root.get("roles"));
     }
 }

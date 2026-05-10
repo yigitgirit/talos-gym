@@ -220,8 +220,8 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponse> getAllUsers(Pageable pageable, String search) {
-        Page<User> users = userDomainService.getAllUsers(pageable, search);
+    public Page<UserResponse> searchUser(Pageable pageable, UserSearchRequest request) {
+        Page<User> users = userDomainService.searchUser(pageable, request);
         return users.map(userMapper::userToUserResponse);
     }
 

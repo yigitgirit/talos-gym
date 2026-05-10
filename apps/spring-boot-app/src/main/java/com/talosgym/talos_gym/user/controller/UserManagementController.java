@@ -4,6 +4,7 @@ import com.talosgym.talos_gym.common.PagedData;
 import com.talosgym.talos_gym.user.dto.UserBanRequest;
 import com.talosgym.talos_gym.user.dto.UpdateUserRequest;
 import com.talosgym.talos_gym.user.dto.UserResponse;
+import com.talosgym.talos_gym.user.dto.UserSearchRequest;
 import com.talosgym.talos_gym.user.model.Role;
 import com.talosgym.talos_gym.user.model.UserStatus;
 import com.talosgym.talos_gym.user.service.IUserService;
@@ -25,12 +26,12 @@ public class UserManagementController {
     private final IUserService userService;
 
     @GetMapping
-    public PagedData<UserResponse> getAllUsers(
+    public PagedData<UserResponse> searchUser(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search
+            @ModelAttribute UserSearchRequest request
     ) {
-        Page<UserResponse> users = userService.getAllUsers(PageRequest.of(page, size), search);
+        Page<UserResponse> users = userService.searchUser(PageRequest.of(page, size), request);
         return PagedData.of(users);
     }
 
