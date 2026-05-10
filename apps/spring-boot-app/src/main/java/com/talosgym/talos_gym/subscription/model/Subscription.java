@@ -34,4 +34,11 @@ public class Subscription extends BaseEntity {
 
     @Column(nullable = false)
     private BigDecimal totalAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SubscriptionStatus status;
+
+    @Column(name = "payment_reference")
+    private String paymentReference;
 }
