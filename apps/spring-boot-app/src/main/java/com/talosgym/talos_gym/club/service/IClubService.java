@@ -19,6 +19,4 @@ public interface IClubService {
     ClubResponse updateClub(Long id, ClubUpdateRequest request);
 
     void deleteClub(Long id);
-
-    void addLocalServicePackageToClub(String clubId, String servicePackageId); // gonna implemented
 }

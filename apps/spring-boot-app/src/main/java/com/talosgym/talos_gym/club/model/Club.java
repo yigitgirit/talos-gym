@@ -1,9 +1,10 @@
 package com.talosgym.talos_gym.club.model;
 
 import com.talosgym.talos_gym.common.model.BaseEntity;
-import com.talosgym.talos_gym.pricing.model.LocalPriceOffer;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,6 @@ public class Club extends BaseEntity {
 
     @Embedded
     private Address address;
-
-    @OneToMany(mappedBy = "club")
-    private List<LocalPriceOffer> localOffers;
 
     @Column(nullable = false)
     private boolean active = true;

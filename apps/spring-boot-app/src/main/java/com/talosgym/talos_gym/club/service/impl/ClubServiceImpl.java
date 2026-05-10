@@ -145,11 +145,6 @@ public class ClubServiceImpl implements IClubService {
         clubRepository.deleteById(id);
     }
 
-    @Override
-    public void addLocalServicePackageToClub(String clubId, String servicePackageId) {
-        // gonna implemented
-    }
-
     // Helper methods
     private String generateSlug(String name) {
         return name.toLowerCase()
