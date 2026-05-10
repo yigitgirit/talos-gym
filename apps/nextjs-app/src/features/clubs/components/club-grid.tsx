@@ -1,3 +1,5 @@
+"use server";
+
 import { ClubCard } from "./club-card";
 import { getServerApi } from "@/lib/api/server";
 import { ClubSearchUrl } from "../schemas";

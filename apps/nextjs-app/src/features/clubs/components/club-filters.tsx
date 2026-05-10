@@ -12,6 +12,8 @@ import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { ClubSearchFilters, ClubSearchFiltersSchema, ClubSearchUrl, ClubSearchUrlSchema } from "../schemas";
 import { useUrlFilters } from "@/features/common/hooks/useUrlFilters";
 
+// This component has both state logic (URL) and filter logic in the same place
+// Might consider passing useUrlFilters variables to sub components like a bar
 export function ClubFilters() {
     const { filters, updateFilters, clearFilters, hasAnyFilter } = useUrlFilters({
         schema: ClubSearchUrlSchema,

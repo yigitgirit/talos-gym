@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { NonBlankStringSchema, createPagedDataSchema, PageRequestSchema } from './common.schema';
 
-export const LocationProviderSchema = z.enum(['GOOGLE_MAPS', 'MAPBOX', 'LOCATION_IQ', 'OSM', 'OTHER']);
+export const LocationProviderSchema = z.enum(['GOOGLE_PLACES', 'MAPBOX', 'LOCATION_IQ', 'MANUAL', 'OTHER']);
 export type LocationProvider = z.infer<typeof LocationProviderSchema>;
 
 export const AddressDtoSchema = z.object({
@@ -68,11 +68,11 @@ export const ClubResponseSchema = z.object({
     id: z.number().int().nonnegative(),
     name: z.string(),
     slug: z.string(),
-    address: AddressSchema.nullable().optional(),
+    address: AddressSchema,
     timeZone: z.string(),
     description: z.string().nullable().optional(),
     active: z.boolean(),
-    scoreMultiplier: z.number().nullable().optional(),
+    scoreMultiplier: z.number(),
     photoUrls: z.array(z.string()),
     operatingHours: z.array(OperatingHourDtoSchema).nullable().optional(),
     scheduleOverrides: z.array(ScheduleOverrideDtoSchema).nullable().optional(),
@@ -81,11 +81,11 @@ export type ClubResponse = z.infer<typeof ClubResponseSchema>;
 
 export const ClubCreateRequestSchema = z.object({
     name: NonBlankStringSchema.max(100),
-    slug: z.string().regex(/^[a-z0-9-]+$/).max(100),
+    slug: z.string().regex(/^[a-z0-9-]+$/).max(100).optional(),
     address: AddressDtoSchema,
     timeZone: NonBlankStringSchema,
     description: z.string().nullable().optional(),
-    photoUrls: z.array(z.url().max(500)).max(10).default([]),
+    photoUrls: z.array(z.string().max(500)).max(10).optional(),
     scoreMultiplier: z.number(),
 });
 export type ClubCreateRequest = z.infer<typeof ClubCreateRequestSchema>;
