@@ -1,5 +1,5 @@
 import type {Metadata} from "next";
-import {Geist, Geist_Mono, Inter, Oxanium} from "next/font/google";
+import {Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import {cn} from "@/lib/utils";
 import {ThemeProvider} from "@/components/providers/theme-provider"
@@ -9,8 +9,8 @@ import {Toaster} from "@/components/ui/sonner"
 import React from "react";
 import {initializeSessionAsync} from "@/features/auth/actions/auth.actions";
 
-const oxaniumHeading = Oxanium({subsets: ['latin'], variable: '--font-heading'});
-const inter = Inter({subsets: ['latin'], variable: '--font-sans'});
+const geistHeading = Geist({subsets:['latin'],variable:'--font-heading'});
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 const geistSans = Geist({subsets: ["latin"], variable: "--font-geist-sans"});
 const geistMono = Geist_Mono({subsets: ["latin"], variable: "--font-geist-mono"});
 
@@ -34,7 +34,7 @@ export default async function RootLayout({
     return (
         <html
             lang="en"
-            className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, inter.variable, oxaniumHeading.variable)}
+            className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable, geistHeading.variable)}
             suppressHydrationWarning
         >
         <body className="min-h-full flex flex-col">

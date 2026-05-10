@@ -70,7 +70,7 @@ export default async function ProfilePage() {
           <h2 className="font-heading font-semibold text-base">
             Personal Information
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">Update your name maybe idk.</p>
+          <p className="text-sm text-muted-foreground mt-1">Update your profile.</p>
         </div>
 
         <ProfileDisplay user={user} />
