@@ -6,6 +6,7 @@ import com.talosgym.talos_gym.exception.ErrorCode;
 import com.talosgym.talos_gym.exception.client.DuplicateResourceException;
 import com.talosgym.talos_gym.exception.client.InvalidInputException;
 import com.talosgym.talos_gym.exception.client.ResourceNotFoundException;
+import com.talosgym.talos_gym.user.dto.UserSearchRequest;
 import com.talosgym.talos_gym.user.model.Role;
 import com.talosgym.talos_gym.user.model.User;
 import com.talosgym.talos_gym.user.model.UserStatus;
@@ -104,8 +105,8 @@ public class UserDomainServiceImpl implements IUserDomainService {
     }
 
     @Override
-    public Page<User> getAllUsers(Pageable pageable, String search) {
-        Specification<User> spec = UserSpecifications.withSearch(search);
+    public Page<User> searchUser(Pageable pageable, UserSearchRequest request) {
+        Specification<User> spec = UserSpecifications.withDynamicQuery(request);
 
         return userRepository.findAll(spec, pageable);
     }
