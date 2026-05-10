@@ -1,32 +1,35 @@
-"use client";
-
 import Link from "next/link";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-export function DesktopNav({ items }: Readonly<{ items: { label: string; href: string }[] }>) {
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface DesktopNavigationProps {
+  items: NavItem[];
+}
+
+export function DesktopNavigation({ items }: DesktopNavigationProps) {
   return (
-    <div className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2">
       <NavigationMenu>
-        <NavigationMenuList className="gap-2">
+        <NavigationMenuList>
           {items.map((item) => (
-            <NavigationMenuItem key={item.href}>
-              <NavigationMenuLink asChild>
-                <Link
-                  href={item.href}
-                  className="text-xs font-extrabold uppercase tracking-widest text-foreground hover:text-primary transition-colors cursor-pointer py-2 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:origin-bottom-left after:scale-x-0 after:bg-primary after:transition-transform hover:after:scale-x-100"
-                >
-                  {item.label}
+              <NavigationMenuItem key={item.label}>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <Link href={item.href} passHref>
+                    {item.label}
                 </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
           ))}
         </NavigationMenuList>
       </NavigationMenu>
-    </div>
   );
 }
