@@ -1,8 +1,10 @@
 package com.talosgym.talos_gym.membership.model;
 
 import com.talosgym.talos_gym.club.model.Club;
+import com.talosgym.talos_gym.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -14,16 +16,13 @@ import java.util.UUID;
                 @UniqueConstraint(columnNames = {"plan_id", "club_id"})
         }
 )
+@SQLRestriction("is_deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Offer {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class Offer extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", nullable = false)
@@ -39,4 +38,7 @@ public class Offer {
     @Column(length = 3, columnDefinition = "varchar(3) default 'TRY'")
     @Builder.Default
     private String currency = "TRY";
+
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private boolean isDeleted = false;
 }
