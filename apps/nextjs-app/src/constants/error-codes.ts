@@ -73,7 +73,6 @@ export const ERROR_MESSAGES: Record<string, string> = {
   [ERROR_CODES.PENDING_USER_NOT_FOUND]: "User registration is not found. Please try to register again.",
 
   // E3xxx - Validation errors
-  [ERROR_CODES.VALIDATION_ERROR]: "Please check the information you entered and try again.",
   [ERROR_CODES.MALFORMED_REQUEST]: "The request format is invalid. Please try again.",
   [ERROR_CODES.INVALID_ARGUMENT_FORMAT]: "One or more fields have invalid format. Please check and try again.",
   [ERROR_CODES.ENDPOINT_NOT_FOUND]: "The requested endpoint does not exist.",
