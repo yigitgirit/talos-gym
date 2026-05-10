@@ -19,7 +19,7 @@ import {getErrorMessage} from "@/constants/error-codes"
 import { AuthLayout } from "@/features/auth/components/auth-layout"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup } from "@/components/ui/field"
-import { OTPInputDefaultPreview } from "@/components/ui/input-otp"
+import { OTPInputDefaultPreview } from "@/components/ui/otp"
 import { cn } from "@/lib/utils"
 import {handleFormServerErrors} from "@/features/common/utils/form-errors";
 

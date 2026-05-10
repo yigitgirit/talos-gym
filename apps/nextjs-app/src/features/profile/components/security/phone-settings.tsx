@@ -24,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {OTPInputDefaultPreview} from '@/components/ui/input-otp'
+import {OTPInputDefaultPreview} from '@/components/ui/otp'
 
 type Props = {
     readonly phoneNumber: string

@@ -15,7 +15,7 @@ import { useVisibilityAutoFocus } from "@/features/common/hooks/useVisibilityAut
 
 import { Button } from "@/components/ui/button"
 import { Field, FieldError } from "@/components/ui/field"
-import { OTPInputDefaultPreview } from "@/components/ui/input-otp"
+import { OTPInputDefaultPreview } from "@/components/ui/otp"
 
 interface ForgotPasswordVerifyProps {
     phoneNumber: string
