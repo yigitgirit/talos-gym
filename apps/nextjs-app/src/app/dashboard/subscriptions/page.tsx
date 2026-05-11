@@ -1,134 +1,31 @@
-'use client'
+"use server";
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
-import { MoreHorizontalIcon } from 'lucide-react'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import {NextPageSearchParams} from "@/features/common/types/search-params"
+import {parseSearchParams} from "@/lib/search-params-utils"
+import {SubscriptionSearchUrlSchema} from "@/features/subscriptions";
+import {SubscriptionManagement} from "@/features/subscriptions/components/dashboard/subscription-management";
+import {getServerApi} from "@/lib/api/server";
 
-const MOCK_SUBSCRIPTIONS = [
-    {
-        id: 1,
-        subscriptionName: 'Gold Annual',
-        price: 599.99,
-        billingCycle: 'Yearly',
-        club: 'Downtown Gym',
-        activeMembers: 245,
-        status: 'active',
-        createdDate: '2023-01-10',
-    },
-    {
-        id: 2,
-        subscriptionName: 'Silver Monthly',
-        price: 29.99,
-        billingCycle: 'Monthly',
-        club: 'Uptown Gym',
-        activeMembers: 128,
-        status: 'active',
-        createdDate: '2024-03-15',
-    },
-    {
-        id: 3,
-        subscriptionName: 'Platinum Quarterly',
-        price: 199.99,
-        billingCycle: 'Quarterly',
-        club: 'Downtown Gym',
-        activeMembers: 89,
-        status: 'active',
-        createdDate: '2024-02-20',
-    },
-    {
-        id: 4,
-        subscriptionName: 'Basic Monthly',
-        price: 19.99,
-        billingCycle: 'Monthly',
-        club: 'Eastside Fitness',
-        activeMembers: 0,
-        status: 'inactive',
-        createdDate: '2023-11-05',
-    },
-]
+type PageProps = {
+    searchParams: Promise<NextPageSearchParams>;
+};
 
-const statusColors = {
-    active: 'bg-green-100 text-green-800 dark:bg-green-900/30',
-    inactive: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30',
-}
+export default async function SubscriptionsPage({searchParams}: PageProps) {
+    const filters = await parseSearchParams(searchParams, SubscriptionSearchUrlSchema);
+    const initialData = await getServerApi().get('api/management/subscriptions', {params: filters});
 
-export default function SubscriptionsPage() {
     return (
-        <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold">Subscriptions</h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Manage subscription plans
+        <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
+                <div className="flex justify-between items-center shrink-0">
+                    <h1 className="text-2xl font-bold  tracking-tight">Subscriptions</h1>
+                    <p className="text-muted-foreground">
+                        Manage user subscriptions
                     </p>
                 </div>
-                <Button>Create Subscription</Button>
-            </div>
-
-            <div className="rounded-lg border overflow-hidden">
-                <Table>
-                    <TableHeader className="bg-muted">
-                        <TableRow>
-                            <TableHead>Subscription Name</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead>Billing Cycle</TableHead>
-                            <TableHead>Club</TableHead>
-                            <TableHead>Active Members</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="w-12"></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {MOCK_SUBSCRIPTIONS.map((subscription) => (
-                            <TableRow key={subscription.id}>
-                                <TableCell className="font-medium">
-                                    {subscription.subscriptionName}
-                                </TableCell>
-                                <TableCell>${subscription.price}</TableCell>
-                                <TableCell>{subscription.billingCycle}</TableCell>
-                                <TableCell>{subscription.club}</TableCell>
-                                <TableCell>{subscription.activeMembers}</TableCell>
-                                <TableCell>
-                                    <Badge
-                                        className={`capitalize ${statusColors[subscription.status as keyof typeof statusColors]}`}
-                                    >
-                                        {subscription.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
-                                                <MoreHorizontalIcon className="size-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>View Details</DropdownMenuItem>
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem className="text-destructive">
-                                                Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                <SubscriptionManagement
+                    initialData={initialData}
+                />
             </div>
         </div>
     )

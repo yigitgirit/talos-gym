@@ -24,7 +24,22 @@ import {
     OperatingHourDto,
     ScheduleOverrideResponse,
     ScheduleOverrideRequest,
-    UpdateOperatingHoursRequest
+    UpdateOperatingHoursRequest,
+    CreateFeatureRequest,
+    FeatureResponse,
+    UpdateFeatureRequest,
+    CreatePlanRequest,
+    MembershipPlanResponse,
+    UpdatePlanRequest,
+    CreateOfferRequest,
+    OfferAdminResponse,
+    UpdateOfferRequest,
+    CreatePlanSubscriptionConfigRequest,
+    PlanSubscriptionConfigResponse,
+    UpdatePlanSubscriptionConfigRequest,
+    CreateSubscriptionRequest,
+    SubscriptionResponse,
+    OfferCatalogResponse
 } from "@/lib/api/schema";
 import type { EndpointOperation } from "@/lib/api/core/route-types";
 
@@ -165,5 +180,93 @@ export type ApiEndpoints = {
     'api/management/clubs/:clubId/schedule/overrides/:overrideId': {
         PUT: EndpointOperation<ScheduleOverrideResponse, ScheduleOverrideRequest>;
         DELETE: EndpointOperation<void>;
+    };
+
+    // -----------------------------------------------------------------
+    // Membership Feature Endpoints
+    // -----------------------------------------------------------------
+    'api/management/features': {
+        POST: EndpointOperation<FeatureResponse, CreateFeatureRequest>;
+        GET: EndpointOperation<FeatureResponse[]>; // list all features
+    };
+    'api/management/features/:featureId': {
+        GET: EndpointOperation<FeatureResponse>;
+        PUT: EndpointOperation<FeatureResponse, UpdateFeatureRequest>;
+        DELETE: EndpointOperation<void>;
+    };
+
+    // -----------------------------------------------------------------
+    // Membership Plan Endpoints
+    // -----------------------------------------------------------------
+    'api/management/plans': {
+        POST: EndpointOperation<MembershipPlanResponse, CreatePlanRequest>;
+        GET: EndpointOperation<MembershipPlanResponse[]>; // list all plans (optional filter via query param)
+    };
+    'api/management/plans/:planId': {
+        GET: EndpointOperation<MembershipPlanResponse>;
+        PUT: EndpointOperation<MembershipPlanResponse, UpdatePlanRequest>;
+        DELETE: EndpointOperation<void>;
+        // Feature association endpoints
+        // Use separate path definitions for clarity
+    };
+    'api/management/plans/:planId/features': {
+        PUT: EndpointOperation<void, Array<number>>; // replace whole set of feature IDs
+    };
+    'api/management/plans/:planId/features/:featureId': {
+        POST: EndpointOperation<void>;   // add a single feature
+        DELETE: EndpointOperation<void>; // remove a single feature
+    };
+
+    // -----------------------------------------------------------------
+    // Plan Subscription Config Endpoints
+    // -----------------------------------------------------------------
+    'api/management/plans/:planId/subscription-configs': {
+        POST: EndpointOperation<PlanSubscriptionConfigResponse, CreatePlanSubscriptionConfigRequest>;
+        GET: EndpointOperation<PlanSubscriptionConfigResponse[]>; // list configs for a plan
+    };
+    'api/management/plans/:planId/subscription-configs/:configId': {
+        PUT: EndpointOperation<PlanSubscriptionConfigResponse, UpdatePlanSubscriptionConfigRequest>;
+        DELETE: EndpointOperation<void>;
+    };
+
+    // -----------------------------------------------------------------
+    // Offer Endpoints
+    // -----------------------------------------------------------------
+    'api/management/offers': {
+        POST: EndpointOperation<OfferAdminResponse, CreateOfferRequest>;
+        GET: EndpointOperation<OfferAdminResponse[]>; // optionally filter by clubId / global via query params
+    };
+    'api/management/offers/:offerId': {
+        PUT: EndpointOperation<OfferAdminResponse, UpdateOfferRequest>;
+        DELETE: EndpointOperation<void>;
+    };
+
+    // -----------------------------------------------------------------
+    // Subscription – Admin Endpoints
+    // -----------------------------------------------------------------
+    'api/management/subscriptions': {
+        GET: EndpointOperation<PagedData<SubscriptionResponse>>; // filter via query params + pagination
+    };
+    'api/management/subscriptions/:id': {
+        GET: EndpointOperation<SubscriptionResponse>;
+    };
+    'api/management/subscriptions/:id/cancel': {
+        PUT: EndpointOperation<void>;
+    };
+
+    // -----------------------------------------------------------------
+    // Subscription – User Endpoints
+    // -----------------------------------------------------------------
+    'api/subscriptions': {
+        POST: EndpointOperation<SubscriptionResponse, CreateSubscriptionRequest>;
+    };
+    'api/subscriptions/my': {
+        GET: EndpointOperation<SubscriptionResponse[]>; // list of current user's subscriptions
+    };
+    'api/subscriptions/:id': {
+        GET: EndpointOperation<SubscriptionResponse>;
+    };
+    'api/subscriptions/:id/cancel': {
+        PUT: EndpointOperation<void>;
     };
 };

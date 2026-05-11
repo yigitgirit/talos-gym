@@ -7,6 +7,8 @@ export default async function DashboardPage() {
     
     let totalUsers = 0
     let totalClubs = 0
+    let totalMemberships = 0
+    let totalSubscriptions = 0
 
     try {
         const usersData = await api.get('api/management/users', { params: { size: 1 } })
@@ -22,9 +24,19 @@ export default async function DashboardPage() {
         console.error("Failed to fetch clubs total", e)
     }
 
-    // 3. Mock Data
-    const mockTotalMemberships = 14250
-    const mockTotalSubscriptions = 8430
+    try {
+        const plansData = await api.get('api/management/plans')
+        totalMemberships = plansData?.length || 0
+    } catch (e) {
+        console.error("Failed to fetch memberships total", e)
+    }
+
+    try {
+        const subscriptionsData = await api.get('api/management/subscriptions', { params: { size: 1 } })
+        totalSubscriptions = subscriptionsData?.metadata?.totalItems || 0
+    } catch (e) {
+        console.error("Failed to fetch subscriptions total", e)
+    }
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-2">
@@ -32,8 +44,8 @@ export default async function DashboardPage() {
                 <SectionCards 
                     totalUsers={totalUsers} 
                     totalClubs={totalClubs} 
-                    totalMemberships={mockTotalMemberships}
-                    totalSubscriptions={mockTotalSubscriptions}
+                    totalMemberships={totalMemberships}
+                    totalSubscriptions={totalSubscriptions}
                 />
                 
                 <div className="px-4 lg:px-6">
