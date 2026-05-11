@@ -25,10 +25,10 @@ public final class SubscriptionSpecifications {
     public static Specification<Subscription> withFilters(SubscriptionFilterDto filter) {
         return (root, query, cb) -> {
             List<Specification<Subscription>> specs = Stream.of(
-                    hasUserId(filter.getUserId()),
-                    hasPlanId(filter.getPlanId()),
-                    hasStatus(filter.getStatus()),
-                    hasPaymentReference(filter.getPaymentReference())
+                    hasUserId(filter.userId()),
+                    hasPlanId(filter.planId()),
+                    hasStatus(filter.status()),
+                    hasPaymentReference(filter.paymentReference())
             ).filter(Objects::nonNull).toList();
 
             Specification<Subscription> filterSpec = Specification.allOf(specs);

@@ -1,5 +1,6 @@
 package com.talosgym.talos_gym.subscription.controller;
 
+import com.talosgym.talos_gym.common.PagedData;
 import com.talosgym.talos_gym.subscription.dto.SubscriptionFilterDto;
 import com.talosgym.talos_gym.subscription.dto.SubscriptionResponse;
 import com.talosgym.talos_gym.subscription.service.SubscriptionService;
@@ -17,10 +18,11 @@ public class AdminSubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @GetMapping
-    public ResponseEntity<Page<SubscriptionResponse>> getAllSubscriptions(
+    public PagedData<SubscriptionResponse> getAllSubscriptions(
             @ModelAttribute SubscriptionFilterDto filter,
             Pageable pageable) {
-        return ResponseEntity.ok(subscriptionService.getAllSubscriptions(filter, pageable));
+        Page<SubscriptionResponse> subscriptions = subscriptionService.getAllSubscriptions(filter, pageable);
+        return PagedData.of(subscriptions);
     }
 
     @GetMapping("/{id}")
