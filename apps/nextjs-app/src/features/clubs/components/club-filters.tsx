@@ -47,7 +47,7 @@ export function ClubFilters() {
     return (
         <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="bg-primary/5 border border-primary/10 rounded-xl p-6 backdrop-blur-sm"
+            className="border border-primary/10 rounded-xl p-6"
         >
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
                 <Controller
@@ -120,9 +120,9 @@ export function ClubFilters() {
                                 value={field.value === undefined ? "" : String(field.value)}
                                 onChange={(e) => {
                                     const val = e.target.value;
-                                    
+
                                     if (val === "") {
-                                        // Bypass RHF's undefined-fallback behavior by wiping the 
+                                        // Bypass RHF's undefined-fallback behavior by wiping the
                                         // entire form cache and replacing it with the current state.
                                         form.reset({ ...form.getValues(), active: undefined });
                                     } else {

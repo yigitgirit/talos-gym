@@ -12,7 +12,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { registerSchema, type RegisterInput } from "@/features/auth/schemas"
 import { useServerAction } from "@/hooks/useServerAction"
 import { registerAsync } from "@/features/auth/actions/auth.actions"
@@ -20,6 +19,7 @@ import { AlertCircle, Loader2 } from "lucide-react"
 import { usePendingRegistrationStore } from "@/features/auth/store/pending-registration"
 import { handleFormServerErrors } from "@/features/common/utils/form-errors"
 import { PhoneInputField } from "@/components/ui/phone-input"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 export function RegisterForm() {
   const router = useRouter()
@@ -178,22 +178,26 @@ export function RegisterForm() {
                 <FieldLabel htmlFor="register-gender" className="text-xs font-medium block">
                   Gender
                 </FieldLabel>
-                <NativeSelect
-                  id="register-gender"
-                  name={field.name}
-                  value={field.value ?? ""}
-                  onBlur={field.onBlur}
-                  onChange={(event) => field.onChange(event.target.value || undefined)}
-                  disabled={isPending}
-                  aria-invalid={fieldState.invalid}
-                  className="h-8 text-sm"
-                >
-                  <NativeSelectOption value="">Select</NativeSelectOption>
-                  <NativeSelectOption value="NOT_SPECIFIED">Not Specified</NativeSelectOption>
-                  <NativeSelectOption value="MALE">Male</NativeSelectOption>
-                  <NativeSelectOption value="FEMALE">Female</NativeSelectOption>
-                  <NativeSelectOption value="EITHER">Either</NativeSelectOption>
-                </NativeSelect>
+                  <Select
+                      value={field.value ?? ""}
+                      onValueChange={(value) => field.onChange(value || undefined)}
+                      disabled={isPending}
+                  >
+                      <SelectTrigger
+                          id="register-gender"
+                          onBlur={field.onBlur}
+                          aria-invalid={fieldState.invalid}
+                          className="w-full"
+                      >
+                          <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                          <SelectItem value="NOT_SPECIFIED">Not Specified</SelectItem>
+                          <SelectItem value="MALE">Male</SelectItem>
+                          <SelectItem value="FEMALE">Female</SelectItem>
+                          <SelectItem value="EITHER">Either</SelectItem>
+                      </SelectContent>
+                  </Select>
                 {fieldState.invalid && fieldState.error && (
                   <FieldError errors={[fieldState.error]} />
                 )}

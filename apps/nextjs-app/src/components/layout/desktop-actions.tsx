@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { UserResponse } from "@/lib/api/schema";
 import { BecomeTalosButton } from "./become-talos-button";
 
@@ -28,7 +28,7 @@ function DesktopAuthenticatedNav({
 }) {
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
 
-  const isStaff = user.roles.some(role => role === "ADMIN" || "STAFF");
+  const isStaff = user.roles.some(role => role === "ADMIN" || role === "TRAINER");
 
   return (
       <div className="flex items-center gap-3">
