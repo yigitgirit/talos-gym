@@ -82,15 +82,11 @@ const customHeaderAttacher: RequestInterceptor = (config) => {
 
 const recoverUnauthorized: ErrorRecoveryHandler = async (error) => {
     if (error.status === 401) {
-        console.log("[Server API] Recover Unauthorized Recovery Handler: Attempting token rotation")
-        console.log("You know what, currently there is no implementation.")
-        // Try to rotate the token here
-        // const rotated = await rotateServerToken();
-        // if (rotated) {
-        //    return retryRequest(); // Seamlessly retries with the new token
-        // }
-        return null; // Return null if the error cannot be recovered
+        console.warn("\x1b[33m[Server API] 401 Unauthorized detected.\x1b[0m");
+        console.log("Mock Recovery: Token rotation is currently disabled.");
+        return null;
     }
+    return null;
 }
 
 const typedApiConfig: ApiConfig = {
@@ -159,19 +155,22 @@ const typedAuthConfig: AuthConfig = {
 export const getServerApi = (): ApiClient => {
     const api = new ApiClient(typedApiConfig, typedAuthConfig);
 
-    // api.addRequestInterceptor(requestLogger);
-    // api.addRequestInterceptor(customHeaderAttacher);
-    // api.addResponseInterceptor(responseLogger);
-    // api.addErrorInterceptor(errorLogger);
+    // const isDev = process.env.NODE_ENV === 'development';
+    //
+    // if (isDev) {
+    //     api.addRequestInterceptor(requestLogger);
+    //     api.addResponseInterceptor(responseLogger);
+    //     api.addErrorInterceptor(errorLogger);
+    // }
 
     // Recovery
     api.addRecoveryHandler(recoverUnauthorized);
 
-    // (Error logging, Sentry/Datadog reporting)
-    api.addErrorInterceptor((error) => {
-        // Example: Sentry.captureException(error);
-        return error;
-    });
+    // // (Error logging, Sentry/Datadog reporting)
+    // api.addErrorInterceptor((error) => {
+    //     // Example: Sentry.captureException(error);
+    //     return error;
+    // });
 
     return api;
 };
