@@ -15,36 +15,24 @@ type ClubManagementProps = {
     initialData: PagedClubResponse
 }
 
-// Concerns with this component:
-// - It has a state that stores the data, duplication?
-// - where should pagination or sorting actually be?
-
-// First, data is rendered server side and passed here
-// then the app leave the fetching/filtering to client side, using server actions
-//
-// Every time this component renders it gets the new filters from search parameters
 export function ClubManagement({ initialData }: ClubManagementProps) {
-    // 1. Local state seeded by SSR
     const [tableData, setTableData] = useState<PagedClubResponse>(initialData);
     const isFirstRender = useRef(true);
 
-    // 2. Initialize URL filter hook
     const { filters, updateFilters, clearFilters, hasAnyFilter } = useUrlFilters({
         schema: ClubSearchUrlSchema,
     });
 
-    // 3. Server Action Hook
     const { execute, isPending } = useServerAction(searchClubsAction, {
         onSuccess: (data) => {
             if (data) setTableData(data);
         }
     });
 
-    // 4. Trigger the action when URL filters change
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            return; // Skip fetch on initial mount (SSR already gave us the data)
+            return;
         }
 
         execute(filters);
@@ -66,7 +54,7 @@ export function ClubManagement({ initialData }: ClubManagementProps) {
                 />
             </div>
 
-                {/* Example Pagination Component */}
+            {/* Example Pagination Component */}
             <PaginationControl
                 page={filters.page || 1}
                 totalPages={tableData.metadata.totalPages}

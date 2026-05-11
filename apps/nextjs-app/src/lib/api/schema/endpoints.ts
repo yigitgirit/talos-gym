@@ -141,6 +141,12 @@ export type ApiEndpoints = {
     'api/clubs/:clubId/schedule/overrides': {
         GET: EndpointOperation<ScheduleOverrideResponse[]>; // Query params: startDate, endDate
     };
+    'api/clubs/:slug/offers': {
+        GET: EndpointOperation<OfferCatalogResponse[]>;
+    };
+    'api/clubs/:slug/offers/:offerId': {
+        GET: EndpointOperation<OfferCatalogResponse>;
+    };
 
     // Club Management Endpoints
     'api/management/clubs': {

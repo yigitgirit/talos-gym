@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { NonBlankStringSchema, createPagedDataSchema, PageRequestSchema } from './common.schema';
+import { FeatureResponseSchema } from './membership.schema';
+import { PaymentOptionDtoSchema } from './payment.schema';
 
 export const LocationProviderSchema = z.enum(['GOOGLE_PLACES', 'MAPBOX', 'LOCATION_IQ', 'MANUAL', 'OTHER']);
 export type LocationProvider = z.infer<typeof LocationProviderSchema>;
@@ -114,3 +116,12 @@ export type ClubSearchRequest = z.infer<typeof ClubSearchRequestSchema>;
 
 export const PagedClubResponseSchema = createPagedDataSchema(ClubResponseSchema);
 export type PagedClubResponse = z.infer<typeof PagedClubResponseSchema>;
+
+export const OfferCatalogResponseSchema = z.object({
+    id: z.number().int().nonnegative(),
+    planName: z.string(),
+    isGlobal: z.boolean(),
+    features: z.array(FeatureResponseSchema),
+    paymentOptions: z.array(PaymentOptionDtoSchema),
+});
+export type OfferCatalogResponse = z.infer<typeof OfferCatalogResponseSchema>;

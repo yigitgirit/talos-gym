@@ -36,7 +36,7 @@ interface ClubDetailNavProps {
 
 export function ClubDetailNav({ clubId, currentTab }: ClubDetailNavProps) {
     return (
-        <aside className="w-full lg:w-56 shrink-0 overflow-x-auto lg:overflow-visible">
+        <aside className="w-full lg:w-56 shrink-0 overflow-x-auto lg:overflow-visible custom-scrollbar">
             <nav className="flex lg:flex-col gap-2 min-w-max lg:min-w-0 pb-2 lg:pb-0">
                 {clubNavItems.map((item) => (
                     <Link

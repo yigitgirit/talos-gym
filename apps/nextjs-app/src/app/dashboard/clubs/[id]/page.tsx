@@ -1,3 +1,5 @@
+"use server";
+
 import {getServerApi} from "@/lib/api/server";
 import {ClubGeneralDetails} from "@/features/clubs/components/dashboard/club-general-details";
 import {ClubScheduleView} from "@/features/clubs/components/dashboard/club-schedule-view";
@@ -30,8 +32,8 @@ export default async function ClubDetailPage(props: PageProps) {
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-8 p-4 md:p-6 mx-auto w-full">
-            <div className="flex flex-col gap-1">
-                <h1 className="text-lg font-semibold tracking-tight">{club.name}</h1>
+            <div className="flex flex-col gap-1 shrink-0">
+                <h1 className="text-2xl font-bold tracking-tight">{club.name}</h1>
                 <p className="text-muted-foreground">Manage club details, schedule, staff, and view analytics.</p>
             </div>
 
