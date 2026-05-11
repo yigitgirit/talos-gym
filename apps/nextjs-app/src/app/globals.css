@@ -369,11 +369,12 @@
 
 @layer utilities {
   .custom-scrollbar {
-    @apply 
-      [&::-webkit-scrollbar]:w-1.5 
-      [&::-webkit-scrollbar-track]:bg-transparent 
-      [&::-webkit-scrollbar-thumb]:rounded-full 
-      [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 
+    @apply
+      [&::-webkit-scrollbar]:w-1.5
+      [&::-webkit-scrollbar]:h-1.5
+      [&::-webkit-scrollbar-track]:bg-transparent
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20
       hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/40;
   }
 }
