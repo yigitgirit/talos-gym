@@ -21,7 +21,6 @@ interface SectionCardsProps {
 export function SectionCards({ totalUsers, totalClubs, totalMemberships, totalSubscriptions }: SectionCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
-      {/* 1. Real Data: Users */}
       <Card className="@container/card">
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
@@ -42,12 +41,11 @@ export function SectionCards({ totalUsers, totalClubs, totalMemberships, totalSu
             Active platform users
           </div>
           <div className="text-muted-foreground">
-            From the real API
+            No activity today
           </div>
         </CardFooter>
       </Card>
 
-      {/* 2. Real Data: Clubs */}
       <Card className="@container/card">
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
@@ -68,12 +66,11 @@ export function SectionCards({ totalUsers, totalClubs, totalMemberships, totalSu
             Registered gym locations
           </div>
           <div className="text-muted-foreground">
-            From the real API
+            No class bookings today
           </div>
         </CardFooter>
       </Card>
 
-      {/* 3. Mock Data: Memberships */}
       <Card className="@container/card">
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
@@ -93,11 +90,10 @@ export function SectionCards({ totalUsers, totalClubs, totalMemberships, totalSu
           <div className="line-clamp-1 flex gap-2 font-medium">
             Trending up this month <TrendingUpIcon className="size-4" />
           </div>
-          <div className="text-muted-foreground">Mock Data</div>
+          <div className="text-muted-foreground">No new plans</div>
         </CardFooter>
       </Card>
 
-      {/* 4. Mock Data: Subscriptions */}
       <Card className="@container/card">
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
@@ -117,7 +113,7 @@ export function SectionCards({ totalUsers, totalClubs, totalMemberships, totalSu
           <div className="line-clamp-1 flex gap-2 font-medium">
             Down 2% this period <TrendingDownIcon className="size-4" />
           </div>
-          <div className="text-muted-foreground">Mock Data</div>
+          <div className="text-muted-foreground">New subscriptions today</div>
         </CardFooter>
       </Card>
     </div>

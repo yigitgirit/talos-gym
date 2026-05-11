@@ -41,8 +41,6 @@ export function GenericDataTable<TData, TValue>({
         onRowSelectionChange: setRowSelection,
         onColumnVisibilityChange: setColumnVisibility,
         getCoreRowModel: getCoreRowModel(),
-        // We set manual pagination to true because we handle it externally
-        // in our custom PaginationControl component
         manualPagination: true,
     })
 

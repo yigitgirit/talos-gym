@@ -14,7 +14,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import {
-  CameraIcon,
   CircleHelpIcon,
   CreditCardIcon,
   DatabaseIcon,
@@ -22,14 +21,13 @@ import {
   FileBadgeIcon,
   FileChartColumnIcon,
   FileIcon,
-  FileTextIcon,
-  FolderIcon,
   LayoutDashboardIcon,
   SearchIcon,
   Settings2Icon,
   UsersIcon
 } from "lucide-react"
 import {Logo} from "@/components/layout/logo";
+import {NavGroup} from "@/components/layout/dashboard/nav-group";
 
 const data = {
     navMain: [
@@ -41,44 +39,10 @@ const data = {
                 />
             ),
         },
-        // {
-        //     title: "Analytics",
-        //     url: "/dashboard/analytics",
-        //     icon: (
-        //         <ChartBarIcon
-        //         />
-        //     ),
-        // },
-        // {
-        //     title: "Projects",
-        //     url: "/dashboard/projects",
-        //     icon: (
-        //         <FolderIcon
-        //         />
-        //     ),
-        // },
-        // {
-        //     title: "Team",
-        //     url: "/dashboard/team",
-        //     icon: (
-        //         <UsersIcon
-        //         />
-        //     ),
-        // },
         {
             title: "Users",
             url: "/dashboard/users",
             icon: <UsersIcon/>,
-        },
-        {
-            title: "Clubs",
-            url: "/dashboard/clubs",
-            icon: <DumbbellIcon/>,
-        },
-        {
-            title: "Memberships",
-            url: "/dashboard/memberships",
-            icon: <FileBadgeIcon/>,
         },
         {
             title: "Subscriptions",
@@ -88,58 +52,19 @@ const data = {
     ],
     navClouds: [
         {
-            title: "Capture",
-            icon: (
-                <CameraIcon
-                />
-            ),
-            isActive: true,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
+            title: "Clubs",
+            url: "/dashboard/clubs",
+            icon: <DumbbellIcon/>,
         },
         {
-            title: "Proposal",
-            icon: (
-                <FileTextIcon
-                />
-            ),
-            url: "#",
+            title: "Memberships",
+            url: "/dashboard/memberships",
+            icon: <FileBadgeIcon />,
             items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Prompts",
-            icon: (
-                <FileTextIcon
-                />
-            ),
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
+                { title: "Plans", url: "/dashboard/memberships" },
+                { title: "Features", url: "/dashboard/memberships/features" },
+                { title: "Offers", url: "/dashboard/memberships/offers" },
+                { title: "Configs", url: "/dashboard/memberships/subscription-configs" },
             ],
         },
     ],
@@ -214,14 +139,12 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain}/>
-                {/*<NavClouds items={data.navClouds}/>*/}
-                {/*<NavDocuments items={data.documents} />*/}
+                <NavGroup label="FOUNDATION" items={data.navClouds}/>
                 <NavSecondary items={data.navSecondary} className="mt-auto"/>
             </SidebarContent>
             <SidebarFooter>
                 <NavUser/>
             </SidebarFooter>
-            {/*<SidebarRail></SidebarRail>*/}
         </Sidebar>
     )
 }
