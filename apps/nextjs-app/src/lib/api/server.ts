@@ -159,10 +159,10 @@ const typedAuthConfig: AuthConfig = {
 export const getServerApi = (): ApiClient => {
     const api = new ApiClient(typedApiConfig, typedAuthConfig);
 
-    api.addRequestInterceptor(requestLogger);
-    api.addRequestInterceptor(customHeaderAttacher);
-    api.addResponseInterceptor(responseLogger);
-    api.addErrorInterceptor(errorLogger);
+    // api.addRequestInterceptor(requestLogger);
+    // api.addRequestInterceptor(customHeaderAttacher);
+    // api.addResponseInterceptor(responseLogger);
+    // api.addErrorInterceptor(errorLogger);
 
     // Recovery
     api.addRecoveryHandler(recoverUnauthorized);
