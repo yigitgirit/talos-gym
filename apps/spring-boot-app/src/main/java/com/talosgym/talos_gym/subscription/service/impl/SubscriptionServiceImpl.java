@@ -53,17 +53,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new BusinessException("You already have an active subscription.", ErrorCode.VALIDATION_ERROR);
         }
 
-        Offer offer = offerRepository.findById(request.getOfferId())
-                .orElseThrow(() -> new ResourceNotFoundException("Offer", "id", request.getOfferId()));
+        Offer offer = offerRepository.findById(request.offerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Offer", "id", request.offerId()));
 
         List<PaymentOptionDto> paymentOptions = pricingEngine.calculatePaymentOptions(offer);
 
         PaymentOptionDto selectedOption = paymentOptions.stream()
-                .filter(option -> option.getSubscriptionTypeId().equals(request.getSubscriptionTypeId()))
+                .filter(option -> option.getSubscriptionTypeId().equals(request.subscriptionTypeId()))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException("Invalid subscription type for this offer", ErrorCode.VALIDATION_ERROR));
 
-        String paymentReference = paymentService.processPayment(selectedOption.getTotalPrice(), request.getPaymentToken());
+        String paymentReference = paymentService.processPayment(selectedOption.getTotalPrice(), request.paymentToken());
 
         int monthsToAdd = selectedOption.getIntervalMonths();
 

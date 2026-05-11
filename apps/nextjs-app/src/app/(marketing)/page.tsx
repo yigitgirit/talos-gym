@@ -82,13 +82,11 @@ const HeroSection = ({ videoUrl }: { videoUrl: string }) => (
                         {/* CTA Buttons - responsive sizing */}
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                             <Button
-                                size="sm"
                                 className="gap-2 bg-overlay-foreground text-overlay hover:bg-overlay-foreground/90 font-semibold transition-all text-sm sm:text-base"
                             >
                                 Start Free <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4"/>
                             </Button>
                             <Button
-                                size="sm"
                                 className="gap-2 border border-overlay-border bg-overlay-subtle text-overlay-foreground hover:bg-overlay-foreground/20 font-semibold transition-all backdrop-blur-sm text-sm sm:text-base"
                             >
                                 Learn More

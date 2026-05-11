@@ -19,6 +19,7 @@ import {
   UpdateOperatingHoursRequestSchema,
   ScheduleOverrideRequest,
   ScheduleOverrideRequestSchema,
+  OfferCatalogResponse,
 } from '@/lib/api/schema';
 
 // --- Schemas for Path & Query Params ---
@@ -44,6 +45,11 @@ const OverrideQuerySchema = z.object({
 const OverrideIdParamsSchema = z.object({
   clubId: z.string(),
   overrideId: z.string(),
+});
+
+const ClubOfferParamsSchema = z.object({
+  slug: z.string(),
+  offerId: z.string(),
 });
 
 // ============================================================================
@@ -108,6 +114,30 @@ export const getClubScheduleOverridesAction = async (
       pathParams: { clubId: valid.clubId },
       params: { startDate: valid.startDate, endDate: valid.endDate },
     });
+  });
+};
+
+/**
+ * Gets offers for a club
+ * Calls GET api/clubs/:slug/offers
+ */
+export const getClubOffersAction = async (
+  input: z.infer<typeof ClubSlugSchema>
+): Promise<ActionState<OfferCatalogResponse[]>> => {
+  return actionClient.withInput(ClubSlugSchema, input).execute(async ({ slug }) => {
+    return await getServerApi().get('api/clubs/:slug/offers', { pathParams: { slug } });
+  });
+};
+
+/**
+ * Gets offer detail for a club
+ * Calls GET api/clubs/:slug/offers/:offerId
+ */
+export const getClubOfferDetailAction = async (
+  input: z.infer<typeof ClubOfferParamsSchema>
+): Promise<ActionState<OfferCatalogResponse>> => {
+  return actionClient.withInput(ClubOfferParamsSchema, input).execute(async ({ slug, offerId }) => {
+    return await getServerApi().get('api/clubs/:slug/offers/:offerId', { pathParams: { slug, offerId } });
   });
 };
 

@@ -20,7 +20,6 @@ import java.lang.Long;
 public class MembershipPlanController {
 
     private final IMembershipPlanService planService;
-    private final IPlanSubscriptionConfigService planSubscriptionConfigService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

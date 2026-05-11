@@ -2,15 +2,69 @@ import 'server-only';
 import {cookies} from 'next/headers';
 import {ApiClient} from './ApiClient';
 import {AUTH_COOKIES} from "@/config/auth.config";
-import {ApiConfig, AuthConfig, ErrorRecoveryHandler, RequestInterceptor} from "@/lib/api/core/types";
+import {
+    ApiConfig,
+    AuthConfig, ErrorInterceptor,
+    ErrorRecoveryHandler,
+    RequestInterceptor,
+    ResponseInterceptor
+} from "@/lib/api/core/types";
 import {ApiError} from "@/lib/api/core/ApiError";
 import {ApiErrorResponseSchema, ApiErrorResponse} from "@/lib/api/schema";
 import {API_CONFIG} from "@/config/api.config";
 
-const logger: RequestInterceptor = (config) => {
-    console.log(`[Server API] Logging Interceptor: ${config.options.method} ${config.url}`);
+/**
+ * REQUEST LOGGER
+ * Logs outgoing data from Server Actions/Components to the Backend.
+ */
+const requestLogger: RequestInterceptor = (config) => {
+    const { method, body } = config.options;
+    console.log(`\x1b[36m[Server API Request] >>\x1b[0m ${method} ${config.url}`);
+
+    if (body && typeof body === 'string') {
+        try {
+            const parsedBody = JSON.parse(body);
+            console.dir(parsedBody, { depth: null, colors: true });
+        } catch {
+            console.log(`Body: ${body}`);
+        }
+    }
     return config;
-}
+};
+
+/**
+ * RESPONSE LOGGER
+ * Logs what the backend actually returned to your server.
+ */
+const responseLogger: ResponseInterceptor = (envelope) => {
+    console.log(`\x1b[32m[Server API Response] <<\x1b[0m Status: ${envelope.status}`);
+
+    if (envelope.payload) {
+        console.dir(envelope.payload, { depth: null, colors: true });
+    }
+
+    return envelope;
+};
+
+/**
+ * ERROR LOGGER
+ * Specifically catches and logs failures for easier debugging.
+ */
+const errorLogger: ErrorInterceptor = (error) => {
+    console.error(`\x1b[31m[Server API Error] !!\x1b[0m`);
+
+    if (error instanceof ApiError) {
+        console.error(`Status: ${error.status} (${error.code})`);
+        console.error(`Message: ${error.message}`);
+        if (error.validationErrors) {
+            console.error(`Validation Details:`, error.validationErrors);
+        }
+    } else {
+        console.error(`AppError: ${error.message}`);
+    }
+
+    return error;
+};
 
 const customHeaderAttacher: RequestInterceptor = (config) => {
     console.log(`[Server API] Header Attacher Interceptor: ${config.options.method} ${config.url}`);
@@ -105,8 +159,12 @@ const typedAuthConfig: AuthConfig = {
 export const getServerApi = (): ApiClient => {
     const api = new ApiClient(typedApiConfig, typedAuthConfig);
 
-    api.addRequestInterceptor(logger);
-    api.addRequestInterceptor(customHeaderAttacher)
+    // api.addRequestInterceptor(requestLogger);
+    // api.addRequestInterceptor(customHeaderAttacher);
+    // api.addResponseInterceptor(responseLogger);
+    // api.addErrorInterceptor(errorLogger);
+
+    // Recovery
     api.addRecoveryHandler(recoverUnauthorized);
 
     // (Error logging, Sentry/Datadog reporting)

@@ -66,17 +66,16 @@ public class MembershipPlanServiceImpl implements IMembershipPlanService {
         return membershipPlanMapper.toResponse(save);
     }
 
-    @Override
+    @Transactional
     public void deletePlan(Long planId) {
-        MembershipPlan membershipPlan = findMembershipPlanByIdOrThrow(planId);
-
+        if (!membershipPlanRepository.existsById(planId)) {
+            throw new ResourceNotFoundException("MembershipPlan", "id", planId);
+        }
         if (offerRepository.existsByPlanId(planId)) {
             throw new BusinessException("Cannot delete this membership plan because it is currently in use by one or more offers.", ErrorCode.VALIDATION_ERROR);
         }
 
-        membershipPlan.setDeleted(true);
-
-        membershipPlanRepository.save(membershipPlan);
+        membershipPlanRepository.softDeleteById(planId);
     }
 
     @Override
