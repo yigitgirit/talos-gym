@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import React from "react"
 import { AppSidebar } from "@/components/layout/dashboard/app-sidebar"
 import { SiteHeader } from "@/components/layout/dashboard/site-header"
