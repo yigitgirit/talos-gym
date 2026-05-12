@@ -1,0 +1,19 @@
+# This file prevents build artifacts, local config, and sensitive files
+# from being sent to the Docker daemon during the build process.
+
+# Git and Docker files
+.git
+.gitignore
+.dockerignore
+
+# Maven build artifacts
+target/
+
+# The downloaded Maven wrapper JAR file
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE and OS files
+.idea/
+.vscode/
+*.iml
+.DS_Store

@@ -1,0 +1,56 @@
+include:
+  - docker-compose.db.yaml
+
+services:
+  backend:
+    build:
+      context: ./apps/spring-boot-app
+    container_name: talosgym-backend
+    ports:
+      - "${BACKEND_PORT}:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_DATA_REDIS_URL=${SPRING_DATA_REDIS_URL}
+      - MACRODROID_WEBHOOK_URL=${MACRODROID_WEBHOOK_URL}
+      - MACRODROID_WEBHOOK_SECRET=${MACRODROID_WEBHOOK_SECRET}
+      - LOCATIONIQ_API_KEY=${LOCATIONIQ_API_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+    networks:
+      - backend-network
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./apps/nextjs-app
+    container_name: talosgym-frontend
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:${BACKEND_PORT:-8080}
+      - INTERNAL_API_URL=http://backend:8080
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - NODE_ENV=${NODE_ENV:-development}
+    networks:
+      - backend-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      # This command checks if the Next.js server is responding to requests.
+      test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
