@@ -4,7 +4,6 @@ import com.talosgym.talos_gym.membership.dto.CreatePlanRequest;
 import com.talosgym.talos_gym.membership.dto.MembershipPlanResponse;
 import com.talosgym.talos_gym.membership.dto.UpdatePlanRequest;
 import com.talosgym.talos_gym.membership.service.IMembershipPlanService;
-import com.talosgym.talos_gym.membership.service.IPlanSubscriptionConfigService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
-import java.lang.Long;
 
 @RestController
 @RequestMapping("/api/management/plans")
@@ -39,8 +37,7 @@ public class MembershipPlanController {
     }
 
     @GetMapping
-    public List<MembershipPlanResponse> getAllPlans(
-            @RequestParam(required = false) Boolean global) {
+    public List<MembershipPlanResponse> getAllPlans(@RequestParam(required = false) Boolean global) {
         return planService.getAllPlans(global);
     }
 

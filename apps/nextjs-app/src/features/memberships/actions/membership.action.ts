@@ -17,6 +17,8 @@ import {
     CreatePlanRequestSchema,
     UpdatePlanRequest,
     UpdatePlanRequestSchema,
+    PublicPlanSearchRequest,
+    PublicPlanSearchRequestSchema,
     // Offer
     OfferAdminResponse,
     CreateOfferRequest,
@@ -163,6 +165,30 @@ export const deletePlanAction = async (
 ): Promise<ActionState<void>> => {
     return actionClient.withInput(PlanIdSchema, input).execute(async ({ planId }) => {
         return await getServerApi().delete('api/management/plans/:planId', {
+            pathParams: { planId },
+        });
+    });
+};
+
+/* -----------------------------------------------------------------
+   Public Membership Plan actions
+   ----------------------------------------------------------------- */
+
+export const getPublicPlansAction = async (
+    filters: PublicPlanSearchRequest
+): Promise<ActionState<MembershipPlanResponse[]>> => {
+    return actionClient.withInput(PublicPlanSearchRequestSchema, filters).execute(async (valid) => {
+        return await getServerApi().get('api/plans', {
+            params: valid,
+        });
+    });
+};
+
+export const getPublicPlanByIdAction = async (
+    input: z.infer<typeof PlanIdSchema>
+): Promise<ActionState<MembershipPlanResponse>> => {
+    return actionClient.withInput(PlanIdSchema, input).execute(async ({ planId }) => {
+        return await getServerApi().get('api/plans/:planId', {
             pathParams: { planId },
         });
     });

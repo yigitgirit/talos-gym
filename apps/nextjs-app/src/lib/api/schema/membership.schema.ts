@@ -43,6 +43,11 @@ export const UpdatePlanRequestSchema = z.object({
 });
 export type UpdatePlanRequest = z.infer<typeof UpdatePlanRequestSchema>;
 
+export const PublicPlanSearchRequestSchema = z.object({
+    global: z.boolean().optional(),
+});
+export type PublicPlanSearchRequest = z.infer<typeof PublicPlanSearchRequestSchema>;
+
 /* -----------------------------------------------------------------
    Offer schemas
    ----------------------------------------------------------------- */
