@@ -103,6 +103,12 @@ public class MembershipPlanServiceImpl implements IMembershipPlanService {
     }
 
     @Override
+    public MembershipPlanResponse getPlanById(Long planId) {
+        MembershipPlan membershipPlan = findMembershipPlanByIdOrThrow(planId);
+        return membershipPlanMapper.toResponse(membershipPlan);
+    }
+
+    @Override
     public void removeFeatureFromPlan(Long planId, Long featureId) {
         MembershipPlan membershipPlan = findMembershipPlanByIdOrThrow(planId);
         Feature feature = findFeatureByIdOrThrow(featureId);

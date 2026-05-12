@@ -12,7 +12,6 @@ export const metadata: Metadata = {
 
 export default async function SubscriptionPage() {
     const result = await getMySubscriptionsAction()
-    // using server actions in server components: is this legit
 
     if (!result.success) {
         redirect('/auth/login')

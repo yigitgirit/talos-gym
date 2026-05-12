@@ -19,6 +19,8 @@ public interface IMembershipPlanService {
 
     void addFeatureToPlan(Long planId, Long featureId);
 
+    MembershipPlanResponse getPlanById(Long planId);
+
     void removeFeatureFromPlan(Long planId, Long featureId);
 
     void setFeatures(Long planId, Set<Long> featureIds);

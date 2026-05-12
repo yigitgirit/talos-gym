@@ -1,10 +1,10 @@
-"use client";
-
 import Image from "next/image";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Award, BarChart3, ChevronRight, Clock, Globe, Smartphone, Target, TrendingUp, Users, Zap} from "lucide-react";
-
+import Link from "next/link";
+import { getServerApi } from "@/lib/api/server";
+import { PlanFeatureMatrixPublic } from "@/features/memberships/components/marketing/plan-feature-matrix-public";
 
 const HeroSection = ({ videoUrl }: { videoUrl: string }) => (
     <section className="w-full relative overflow-hidden" style={{height: 'calc(100vh - 64px)'}}>
@@ -82,9 +82,12 @@ const HeroSection = ({ videoUrl }: { videoUrl: string }) => (
                         {/* CTA Buttons - responsive sizing */}
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                             <Button
+                                asChild
                                 className="gap-2 bg-overlay-foreground text-overlay hover:bg-overlay-foreground/90 font-semibold transition-all text-sm sm:text-base"
                             >
-                                Start Free <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4"/>
+                                <Link href="/get-started">
+                                    Get Started <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4"/>
+                                </Link>
                             </Button>
                             <Button
                                 className="gap-2 border border-overlay-border bg-overlay-subtle text-overlay-foreground hover:bg-overlay-foreground/20 font-semibold transition-all backdrop-blur-sm text-sm sm:text-base"
@@ -354,89 +357,54 @@ const CommunitySection = () => (
     </section>
 );
 
-const PricingSection = () => (
-    <section className="w-full py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-8">
-        <div className="container max-w-7xl mx-auto">
-            <div className="text-center mb-8 sm:mb-12">
-                <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-4">
-                    Plans for Every Fitness Level
-                </h2>
-                <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
-                    Choose the perfect plan to start your journey today.
-                </p>
+const DynamicPricingSection = async () => {
+    let plansData;
+    try {
+        const api = getServerApi();
+        plansData = await api.get('api/plans');
+    } catch (e) {
+        return null;
+    }
+
+    if (!plansData || plansData.length === 0) return null;
+
+    const sortedPlans = [...plansData].sort((a, b) => a.features.length - b.features.length);
+    
+    // Extract unique features directly from the plans
+    const uniqueFeaturesMap = new Map();
+    plansData.forEach(plan => {
+        plan.features.forEach(f => {
+            if (!uniqueFeaturesMap.has(f.id)) {
+                uniqueFeaturesMap.set(f.id, f);
+            }
+        });
+    });
+    const featuresData = Array.from(uniqueFeaturesMap.values());
+
+    return (
+        <section className="w-full py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-8">
+            <div className="container max-w-5xl mx-auto">
+                <div className="text-center mb-8 sm:mb-12">
+                    <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-4">
+                        Compare Our Plans
+                    </h2>
+                    <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2 mb-8">
+                        Find the perfect plan for your fitness journey.
+                    </p>
+                </div>
+                
+                <PlanFeatureMatrixPublic plans={sortedPlans} features={featuresData} />
+                
+                <div className="flex justify-center mt-8">
+                    <Button asChild size="lg" className="px-8 font-semibold shadow-md">
+                        <Link href="/get-started">Choose Your Plan</Link>
+                    </Button>
+                </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">Starter</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-4">
-                        <div className="text-2xl sm:text-3xl font-bold font-heading">Free</div>
-                        <ul className="space-y-2 text-xs sm:text-sm">
-                            <li className="flex gap-2">
-                                <span className="text-primary shrink-0">✓</span> Basic workout tracking
-                            </li>
-                            <li className="flex gap-2">
-                                <span className="text-primary shrink-0">✓</span> Community access
-                            </li>
-                            <li className="flex gap-2">
-                                <span className="text-primary shrink-0">✓</span> Limited analytics
-                            </li>
-                        </ul>
-                        <Button variant="outline" className="w-full text-xs sm:text-sm" size="sm">
-                            Get Started
-                        </Button>
-                    </CardContent>
-                </Card>
-                <Card className="border-primary sm:col-span-2 lg:col-span-1">
-                    <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">Pro</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-4">
-                        <div className="text-2xl sm:text-3xl font-bold font-heading">$9.99<span
-                            className="text-sm sm:text-lg text-muted-foreground">/mo</span></div>
-                        <ul className="space-y-2 text-xs sm:text-sm">
-                            <li className="flex gap-2">
-                                <span className="text-primary shrink-0">✓</span> Advanced analytics
-                            </li>
-                            <li className="flex gap-2">
-                                <span className="text-primary shrink-0">✓</span> Personalized coaching
-                            </li>
-                            <li className="flex gap-2">
-                                <span className="text-primary shrink-0">✓</span> Priority support
-                            </li>
-                        </ul>
-                        <Button className="w-full text-xs sm:text-sm" size="sm">
-                            Subscribe Now
-                        </Button>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">Enterprise</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-4">
-                        <div className="text-2xl sm:text-3xl font-bold font-heading">Custom</div>
-                        <ul className="space-y-2 text-xs sm:text-sm">
-                            <li className="flex gap-2">
-                                <span className="text-primary shrink-0">✓</span> Dedicated account manager
-                            </li>
-                            <li className="flex gap-2">
-                                <span className="text-primary shrink-0">✓</span> Custom integrations
-                            </li>
-                            <li className="flex gap-2">
-                                <span className="text-primary shrink-0">✓</span> White-label options
-                            </li>
-                        </ul>
-                        <Button variant="outline" className="w-full text-xs sm:text-sm" size="sm">
-                            Contact Sales
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-    </section>
-);
+        </section>
+    );
+};
+
 
 const CTASection = () => (
     <section
@@ -446,16 +414,18 @@ const CTASection = () => (
                 Ready to Transform Your Fitness?
             </h2>
             <p className="text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto opacity-90">
-                Join thousands of athletes already using TalosGym. Start your free trial today, no credit card required.
+                Join thousands of athletes using TalosGym. Choose your plan and start your fitness journey today.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <Button size="sm" 
+                <Button asChild size="sm"
                         className="gap-2 bg-primary-foreground text-primary hover:bg-primary-foreground/90 text-xs sm:text-sm md:text-base">
-                    Start Free Trial <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4"/>
+                    <Link href="/get-started">
+                        Get Started <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4"/>
+                    </Link>
                 </Button>
                 <Button size="sm" variant="outline"
                         className="gap-2 bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 text-xs sm:text-sm md:text-base">
-                    Schedule Demo
+                    View Plans
                 </Button>
             </div>
         </div>
@@ -463,7 +433,7 @@ const CTASection = () => (
 );
 
 
-export default function Home() {
+export default async function Home() {
     const videoUrl = "https://wyuetersls0cldjq.public.blob.vercel-storage.com/4367640-hd_1920_1080_30fps.mp4";
 
     return (
@@ -473,7 +443,7 @@ export default function Home() {
             <AppMarketingSection/>
             <AnalyticsSection/>
             <CommunitySection/>
-            <PricingSection/>
+            <DynamicPricingSection/>
             <CTASection/>
         </>
     );

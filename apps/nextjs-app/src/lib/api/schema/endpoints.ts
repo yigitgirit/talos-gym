@@ -163,6 +163,14 @@ export type ApiEndpoints = {
         GET: EndpointOperation<OfferCatalogResponse>;
     };
 
+    // Public Membership Plans Endpoints
+    'api/plans': {
+        GET: EndpointOperation<MembershipPlanResponse[]>; // Query params: global (optional)
+    };
+    'api/plans/:planId': {
+        GET: EndpointOperation<MembershipPlanResponse>;
+    };
+
     // Club Management Endpoints
     'api/management/clubs': {
         POST: EndpointOperation<ClubResponse, ClubCreateRequest>;
