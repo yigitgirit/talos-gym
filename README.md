@@ -9,7 +9,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-16.2.3-black)
 ![React](https://img.shields.io/badge/React-19.2.4-blue)
 
-A full-stack Gym Management application built with **Spring Boot** and **Next.js**. TalosGym is designed to digitalize the core operations of a fitness center, handling member registrations, subscription plans, payment tracking, and facility access.
+A full-stack Gym Management application built with **Spring Boot** and **Next.js**. TalosGym is designed to digitalize the core operations of a fitness franchise, handling club management, member registrations, subscription plans, payment tracking, and facility access.
 
 ## Table of Contents
 
