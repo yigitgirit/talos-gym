@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -46,7 +46,11 @@ export function OtpVerificationView() {
         return null
     }
 
-    return <OTPVerificationContent referenceId={referenceId} />
+    return (
+        <AuthLayout title="Verify your number" description={`We've sent a 6-digit code to ${maskPhone(referenceId)}`}>
+            <OTPVerificationContent referenceId={referenceId} />
+        </AuthLayout>
+    )
 }
 
 function OTPVerificationContent({ referenceId }: { referenceId: string }) {
@@ -113,8 +117,7 @@ function OTPVerificationContent({ referenceId }: { referenceId: string }) {
         ? getErrorMessage(verifyError.code, verifyError.message)
         : undefined;
 
-    const maskedPhone = useMemo(() => maskPhone(referenceId), [referenceId])
-    const statusMessage = success ? "Verification successful! Redirecting..." : rootErrorMessage
+    const statusMessage = success ? "Verification successful!" : rootErrorMessage
     const isError = !success && !!rootErrorMessage
 
     const isSubmitting = verifyAction.isPending
@@ -125,85 +128,83 @@ function OTPVerificationContent({ referenceId }: { referenceId: string }) {
     const resendText = isResending ? "Sending code..." : canResend ? "Resend" : "Wait"
 
     return (
-        <AuthLayout title="Verify your number" description={`We've sent a 6-digit code to ${maskedPhone}`}>
-            <div className="flex w-full flex-col gap-4">
-                {statusMessage && (
-                    <div
-                        aria-live={isError ? "assertive" : "polite"}
-                        className={cn(
-                            "flex gap-2.5 rounded-lg border p-3",
-                            isError
-                                ? "border-destructive-border bg-destructive-subtle text-destructive"
-                                : "border-accent-border bg-accent-subtle text-accent-foreground"
-                        )}
-                        role={isError ? "alert" : "status"}
-                    >
-                        {isError ? (
-                            <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
-                        ) : (
-                            <CheckCircle2 className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
-                        )}
-                        <p className="text-sm font-medium">{statusMessage}</p>
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                    <FieldGroup className="gap-3">
-                        <Field data-invalid={Boolean(form.formState.errors.pin) || undefined}>
-                            <Controller
-                                name="pin"
-                                control={form.control}
-                                render={({ field }) => (
-                                    <OTPInputDefaultPreview
-                                        {...field}
-                                        ref={(e) => {
-                                            field.ref(e)
-                                            if (otpInputRef) otpInputRef.current = e
-                                        }}
-                                        onChange={(val) => {
-                                            field.onChange(val)
-                                            if (verifyAction.error) verifyAction.reset()
-                                        }}
-                                        slotCount={6}
-                                        disabled={success || isSubmitting}
-                                        aria-invalid={Boolean(form.formState.errors.pin)}
-                                    />
-                                )}
-                            />
-
-                            {form.formState.errors.pin && (
-                                <FieldError errors={[{ message: form.formState.errors.pin.message || "Invalid code" }]} />
-                            )}
-                        </Field>
-
-                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground" aria-live="polite">
-                            <Clock className="size-4" aria-hidden="true" />
-                            {canResend ? (
-                                <span>Code expired. You can resend now.</span>
-                            ) : (
-                                <span>Resend in {String(timeLeft).padStart(2, "0")}s</span>
-                            )}
-                        </div>
-
-                        <Button type="submit" className="mt-1 h-10 w-full" disabled={isSubmitDisabled}>
-                            {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
-                            {submitText}
-                        </Button>
-                    </FieldGroup>
-                </form>
-
-                <div className="mt-4 text-center text-sm">
-                    <Button
-                        type="button"
-                        variant="link"
-                        onClick={handleResend}
-                        disabled={!canResend || isResending || isSubmitting}
-                        className="h-auto p-0"
-                    >
-                        Didn't receive the code? {resendText}
-                    </Button>
+        <div className="flex w-full flex-col gap-4">
+            {statusMessage && (
+                <div
+                    aria-live={isError ? "assertive" : "polite"}
+                    className={cn(
+                        "flex gap-2.5 rounded-lg border p-3",
+                        isError
+                            ? "border-destructive-border bg-destructive-subtle text-destructive"
+                            : "border-accent-border bg-accent-subtle text-accent-foreground"
+                    )}
+                    role={isError ? "alert" : "status"}
+                >
+                    {isError ? (
+                        <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+                    ) : (
+                        <CheckCircle2 className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+                    )}
+                    <p className="text-sm font-medium">{statusMessage}</p>
                 </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                <FieldGroup className="gap-3">
+                    <Field data-invalid={Boolean(form.formState.errors.pin) || undefined}>
+                        <Controller
+                            name="pin"
+                            control={form.control}
+                            render={({ field }) => (
+                                <OTPInputDefaultPreview
+                                    {...field}
+                                    ref={(e) => {
+                                        field.ref(e)
+                                        if (otpInputRef) otpInputRef.current = e
+                                    }}
+                                    onChange={(val) => {
+                                        field.onChange(val)
+                                        if (verifyAction.error) verifyAction.reset()
+                                    }}
+                                    slotCount={6}
+                                    disabled={success || isSubmitting}
+                                    aria-invalid={Boolean(form.formState.errors.pin)}
+                                />
+                            )}
+                        />
+
+                        {form.formState.errors.pin && (
+                            <FieldError errors={[{ message: form.formState.errors.pin.message || "Invalid code" }]} />
+                        )}
+                    </Field>
+
+                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground" aria-live="polite">
+                        <Clock className="size-4" aria-hidden="true" />
+                        {canResend ? (
+                            <span>Code expired. You can resend now.</span>
+                        ) : (
+                            <span>Resend in {String(timeLeft).padStart(2, "0")}s</span>
+                        )}
+                    </div>
+
+                    <Button type="submit" className="mt-1 h-10 w-full" disabled={isSubmitDisabled}>
+                        {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+                        {submitText}
+                    </Button>
+                </FieldGroup>
+            </form>
+
+            <div className="mt-4 text-center text-sm">
+                <Button
+                    type="button"
+                    variant="link"
+                    onClick={handleResend}
+                    disabled={!canResend || isResending || isSubmitting}
+                    className="h-auto p-0"
+                >
+                    Didn't receive the code? {resendText}
+                </Button>
             </div>
-        </AuthLayout>
+        </div>
     )
 }
