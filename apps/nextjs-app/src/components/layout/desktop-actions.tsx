@@ -68,7 +68,7 @@ function DesktopAuthenticatedNav({
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
                 <Link href="/account" className="w-full cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" /> Profile
+                  <Settings className="mr-2 h-4 w-4" /> Account
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>

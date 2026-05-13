@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar"
 import {
   CircleHelpIcon,
+    ClipboardListIcon,
   CreditCardIcon,
   DatabaseIcon,
   DumbbellIcon,
@@ -24,6 +25,8 @@ import {
   LayoutDashboardIcon,
   SearchIcon,
   Settings2Icon,
+    StarIcon,
+    TagIcon,
   UsersIcon
 } from "lucide-react"
 import {Logo} from "@/components/layout/logo";
@@ -54,18 +57,27 @@ const data = {
         {
             title: "Clubs",
             url: "/dashboard/clubs",
-            icon: <DumbbellIcon/>,
+            icon: <DumbbellIcon />,
         },
         {
-            title: "Memberships",
+            title: "Plans",
             url: "/dashboard/memberships",
-            icon: <FileBadgeIcon />,
-            items: [
-                { title: "Plans", url: "/dashboard/memberships" },
-                { title: "Features", url: "/dashboard/memberships/features" },
-                { title: "Offers", url: "/dashboard/memberships/offers" },
-                { title: "Configs", url: "/dashboard/memberships/subscription-configs" },
-            ],
+            icon: <ClipboardListIcon />,
+        },
+        {
+            title: "Features",
+            url: "/dashboard/memberships/features",
+            icon: <StarIcon />,
+        },
+        {
+            title: "Offers",
+            url: "/dashboard/memberships/offers",
+            icon: <TagIcon />,
+        },
+        {
+            title: "Configs",
+            url: "/dashboard/memberships/subscription-configs",
+            icon: <Settings2Icon />,
         },
     ],
     navSecondary: [

@@ -4,6 +4,7 @@ import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -24,6 +25,7 @@ import { PhoneInputField } from "@/components/ui/phone-input"
 
 export function LoginForm() {
   const [useEmail, setUseEmail] = React.useState(false)
+  const searchParams = useSearchParams()
 
   const schema = useEmail ? emailLoginSchema : loginPhoneSchema
 
@@ -38,7 +40,13 @@ export function LoginForm() {
 
   const { execute, isPending } = useServerAction(loginAsync, {
     onSuccess: () => {
-      globalThis.location.href = "/";
+      const callbackUrl = searchParams?.get("callbackUrl");
+      // Hard navigation
+      if (callbackUrl) {
+          globalThis.location.href = callbackUrl;
+      } else {
+          globalThis.location.href = "/";
+      }
     },
     onError: (error) => {
       handleFormServerErrors(error, form.setError)
