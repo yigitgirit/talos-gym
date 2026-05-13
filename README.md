@@ -48,19 +48,17 @@ A full-stack Gym Management application built with **Spring Boot** and **Next.js
 - **Easy Enrollment:** Members can purchase and activate memberships with just a few clicks
 - **Flexible Subscriptions:** Support various billing cycles (monthly, quarterly, annual)
 - **Subscription Management:** Members can view, renew, or cancel their subscriptions anytime
-- **Payment Processing:** Secure payment handling and transaction tracking
 
 ### 🔔 Communication
 - **Notification Preferences:** Members control how and when they receive updates
-- **Smart Alerts:** Automated notifications about subscription renewal, expiration, and special offers
+- **Smart Alerts:** Automated notifications about subscription, expiration and security alerts
 - **Targeted Messages:** Send announcements to specific member groups or clubs
 
 ### 👨‍💼 Admin Features
 - **User Administration:** View, manage, and moderate member accounts
 - **Member Status Control:** Activate, deactivate, ban, or unban members
-- **Role Management:** Assign admin roles and permissions to staff members
 - **Club Management:** Create, edit, and delete clubs and their details
-- **Analytics Dashboard:** Monitor gym operations and key metrics
+- **Analytics Dashboard:** Manage gym operations and monitor key metrics
 
 ## Gallery
 
@@ -237,13 +235,13 @@ apps/nextjs-app/src/
 ## Technologies Used
 
 ### Frontend Layer
-- **Framework:** Next.js 16.2.3
+- **Framework:** Next.js 16
 - **Language:** TypeScript 5
-- **UI Library:** React 19.2.4
+- **UI Library:** React 19
 - **Styling:** Tailwind CSS 4
 
 ### Backend Layer
-- **Framework:** Spring Boot 4.0.4
+- **Framework:** Spring Boot 4
 - **Language:** Java 25
 - **ORM:** Spring Data JPA (Hibernate)
 - **Security:** Spring Security (JWT)
