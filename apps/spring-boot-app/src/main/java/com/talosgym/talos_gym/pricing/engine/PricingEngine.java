@@ -73,10 +73,11 @@ public class PricingEngine {
 
     private String generateDescription(String typeName, BigDecimal discountRate) {
         if ("ANNUAL_PREPAID".equals(typeName) && discountRate.compareTo(BigDecimal.ZERO) > 0) {
-            return "%" + discountRate.multiply(BigDecimal.valueOf(100)).intValue() + " Avantajlı Peşin Ödeme";
+            // Converts e.g., 0.15 to "15% Advantageous Upfront Payment"
+            return discountRate.multiply(BigDecimal.valueOf(100)).intValue() + "% Upfront Payment Discount";
         } else if ("MONTHLY".equals(typeName)) {
-            return "Taahhütsüz, İstediğin Zaman İptal Et";
+            return "No Commitment, Cancel Anytime";
         }
-        return "12 Ay Sözünüze Sabit Fiyat";
+        return "Fixed Price for 12 Months";
     }
 }
