@@ -5,12 +5,14 @@ import com.talosgym.talos_gym.membership.model.PlanSubscriptionConfig;
 import com.talosgym.talos_gym.membership.repository.PlanSubscriptionConfigRepository;
 import com.talosgym.talos_gym.pricing.dto.PaymentOptionDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PricingEngine {
@@ -34,34 +36,28 @@ public class PricingEngine {
 
         return configs.stream().map(config -> {
             BigDecimal basePrice = offer.getBasePrice();
+            int duration = config.getSubscriptionType().getIntervalMonths();
+
+            BigDecimal unitPrice = basePrice.multiply(config.getMultiplier());
+
+            BigDecimal rawTotal = unitPrice.multiply(BigDecimal.valueOf(duration));
 
             BigDecimal totalPrice;
-            BigDecimal monthlyPrice;
-            String description;
-
-            BigDecimal multipliedPrice = basePrice.multiply(config.getMultiplier());
-
-            BigDecimal rawTotalPrice = multipliedPrice.multiply(BigDecimal.valueOf(config.getSubscriptionType().getIntervalMonths()));
-
             if (config.getDiscountRate() != null && config.getDiscountRate().compareTo(BigDecimal.ZERO) > 0) {
-                BigDecimal discountAmount = rawTotalPrice.multiply(config.getDiscountRate());
-                totalPrice = rawTotalPrice.subtract(discountAmount);
+                BigDecimal discountMultiplier = BigDecimal.ONE.subtract(config.getDiscountRate());
+                totalPrice = rawTotal.multiply(discountMultiplier);
             } else {
-                totalPrice = rawTotalPrice;
+                totalPrice = rawTotal;
             }
 
-            if (config.getInstallments() != null && config.getInstallments() > 0) {
-                monthlyPrice = totalPrice.divide(BigDecimal.valueOf(config.getInstallments()), 2, RoundingMode.HALF_UP);
-            } else {
-                monthlyPrice = totalPrice.divide(BigDecimal.valueOf(config.getSubscriptionType().getIntervalMonths()), 2, RoundingMode.HALF_UP);
-            }
+            BigDecimal monthlyPrice = totalPrice.divide(BigDecimal.valueOf(duration), 2, RoundingMode.HALF_UP);
 
-            description = generateDescription(config.getSubscriptionType().getName(), config.getDiscountRate());
+            String description = generateDescription(config.getSubscriptionType().getName(), config.getDiscountRate());
 
             return PaymentOptionDto.builder()
                     .subscriptionTypeId(config.getSubscriptionType().getId())
                     .typeName(config.getSubscriptionType().getName())
-                    .intervalMonths(config.getSubscriptionType().getIntervalMonths())
+                    .intervalMonths(duration)
                     .monthlyPrice(monthlyPrice)
                     .totalPrice(totalPrice)
                     .installments(config.getInstallments())
@@ -73,7 +69,7 @@ public class PricingEngine {
 
     private String generateDescription(String typeName, BigDecimal discountRate) {
         if ("ANNUAL_PREPAID".equals(typeName) && discountRate.compareTo(BigDecimal.ZERO) > 0) {
-            // Converts e.g., 0.15 to "15% Advantageous Upfront Payment"
+            // Converts 0.15 to "15% Advantageous Upfront Payment"
             return discountRate.multiply(BigDecimal.valueOf(100)).intValue() + "% Upfront Payment Discount";
         } else if ("MONTHLY".equals(typeName)) {
             return "No Commitment, Cancel Anytime";
