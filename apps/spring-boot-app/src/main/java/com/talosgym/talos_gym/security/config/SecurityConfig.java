@@ -41,6 +41,7 @@ public class SecurityConfig {
             "/api/auth/**",
             "/api/verification/**",
             "/api/clubs/**",
+            "/api/plans/**",
             "/commmon/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
