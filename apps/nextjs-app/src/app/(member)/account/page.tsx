@@ -10,10 +10,8 @@ export const metadata: Metadata = {
 }
 
 export default async function ProfilePage() {
-  // Fetch the current user profile
   const result = await getProfileAsync()
 
-  // If not authenticated or error fetching profile, redirect to login
   if (!result.success || !result.data) {
     redirect('/auth/login')
   }
