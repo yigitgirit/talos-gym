@@ -23,4 +23,7 @@ public class RefreshToken extends BaseEntity {
 
     @ManyToOne
     private User user;
+
+    @Column(name = "remember_me")
+    private boolean rememberMe;
 }

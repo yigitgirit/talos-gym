@@ -11,16 +11,19 @@ import {
 export const loginPhoneSchema = z.object({
     identifier: PhoneNumberSchema,
     password: NonBlankStringSchema,
+    rememberMe: z.boolean(),
 })
 
 export const emailLoginSchema = z.object({
   identifier: EmailSchema,
-  password: NonBlankStringSchema
+  password: NonBlankStringSchema,
+  rememberMe: z.boolean(),
 })
 
 export const loginSchema = z.object({
     identifier: IdentifierSchema,
     password: NonBlankStringSchema,
+    rememberMe: z.boolean(),
 })
 
 export const registerSchema = z
