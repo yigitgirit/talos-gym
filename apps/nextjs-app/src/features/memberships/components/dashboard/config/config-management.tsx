@@ -46,13 +46,6 @@ export function ConfigManagement({ plans, configsByPlan }: ConfigManagementProps
 
     return (
         <div className="space-y-6 flex flex-col min-h-0">
-            <div className="flex justify-between items-center shrink-0">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Subscription Configurations</h1>
-                    <p className="text-muted-foreground">Manage pricing intervals and discounts per plan.</p>
-                </div>
-            </div>
-
             <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="w-full flex flex-col md:flex-row gap-4 md:gap-8 flex-1 min-h-0">
                 {/* Plan Navigator / Sidebar */}
                 <div className="w-full md:w-72 shrink-0 flex flex-col max-h-[60vh] md:max-h-[calc(100vh-140px)]">

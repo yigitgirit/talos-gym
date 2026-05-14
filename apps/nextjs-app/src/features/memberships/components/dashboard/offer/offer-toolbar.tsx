@@ -48,7 +48,7 @@ export function OfferToolbar({ filters, updateFiltersAction, clearFiltersAction,
                                 {...clubIdProps}
                                 type="number"
                                 placeholder="Club ID..."
-                                className="h-9 text-sm bg-background"
+                                className="h-9 text-sm"
                             />
                         </InputGroup>
 

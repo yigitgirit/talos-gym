@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 
 import { ToolbarLayout } from "@/components/layout/dashboard/toolbar-layout";
@@ -17,12 +16,11 @@ import {
 import { CreateFeatureForm } from "./create-feature-form";
 
 export function FeatureToolbar() {
-    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
 
     return (
         <ToolbarLayout
-            filters={null} // Add search/filters here later if needed
+            filters={null}
             actions={
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogTrigger asChild>
