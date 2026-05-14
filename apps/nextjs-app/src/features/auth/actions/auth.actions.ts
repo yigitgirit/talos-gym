@@ -22,7 +22,7 @@ import {
   ConfirmLinkRequest,
   ConfirmLinkRequestSchema,
 } from '@/lib/api/schema';
-import { AUTH_COOKIES, COOKIE_OPTIONS } from '@/config/auth.config';
+import { AUTH_COOKIES } from '@/config/auth.config';
 import { actionClient } from '@/lib/actions/ActionClient';
 
 /**
@@ -37,20 +37,24 @@ export async function loginAsync(input: LoginRequest) {
 
     const cookieStore = await cookies();
 
-    cookieStore.set(AUTH_COOKIES.ACCESS_TOKEN, tokens.accessToken, {
+    const accessTokenMaxAge = Math.floor(tokens.accessTokenExpiresIn / 1000);
+    const refreshTokenMaxAge = Math.floor(tokens.refreshTokenExpiresIn / 1000);
+
+    const commonOptions = {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
       path: '/',
-      maxAge: tokens.accessTokenExpiresIn ? Math.floor(tokens.accessTokenExpiresIn / 1000) : COOKIE_OPTIONS.accessTokenMaxAge,
       secure: process.env.NODE_ENV === 'production',
+    };
+
+    cookieStore.set(AUTH_COOKIES.ACCESS_TOKEN, tokens.accessToken, {
+      ...commonOptions,
+      maxAge: accessTokenMaxAge,
     });
 
     cookieStore.set(AUTH_COOKIES.REFRESH_TOKEN, tokens.refreshToken, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: tokens.refreshTokenExpiresIn ? Math.floor(tokens.refreshTokenExpiresIn / 1000) : COOKIE_OPTIONS.refreshTokenMaxAge,
-      secure: process.env.NODE_ENV === 'production',
+      ...commonOptions,
+      maxAge: refreshTokenMaxAge,
     });
 
     return await api.get('api/users/me');

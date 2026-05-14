@@ -1,2 +1,2 @@
 export { API_CONFIG } from './api.config';
-export { AUTH_COOKIES, COOKIE_OPTIONS } from './auth.config';
+export { AUTH_COOKIES } from './auth.config';

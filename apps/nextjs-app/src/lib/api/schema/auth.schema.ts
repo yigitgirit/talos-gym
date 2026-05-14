@@ -15,6 +15,7 @@ import {
 export const LoginRequestSchema = z.object({
     identifier: IdentifierSchema,
     password: NonBlankStringSchema,
+    rememberMe: z.boolean().optional().default(false),
 });
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 

@@ -23,6 +23,7 @@ public class SecurityProperties {
     @Data
     public static class RefreshToken {
         private long expiration;
+        private long rememberMeExpiration;
         private String cleanupCron;
     }
 }

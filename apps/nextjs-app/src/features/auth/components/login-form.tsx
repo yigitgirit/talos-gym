@@ -22,6 +22,7 @@ import { loginAsync } from "@/features/auth/actions/auth.actions"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { handleFormServerErrors } from "@/features/common/utils/form-errors"
 import { PhoneInputField } from "@/components/ui/phone-input"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export function LoginForm() {
   const [useEmail, setUseEmail] = React.useState(false)
@@ -35,6 +36,7 @@ export function LoginForm() {
     defaultValues: {
       identifier: "",
       password: "",
+      rememberMe: false,
     },
   })
 
@@ -137,6 +139,25 @@ export function LoginForm() {
               )}
             </Field>
           )}
+        />
+
+        {/* Remember Me Checkbox */}
+        <Controller
+            name="rememberMe"
+            control={form.control}
+            render={({ field }) => (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={isPending}
+                      className="data-[state=checked]:bg-primary"
+                  />
+                  <span className="text-xs text-muted-foreground select-none">
+                Remember me
+              </span>
+                </label>
+            )}
         />
 
         {/* Submit Button */}
