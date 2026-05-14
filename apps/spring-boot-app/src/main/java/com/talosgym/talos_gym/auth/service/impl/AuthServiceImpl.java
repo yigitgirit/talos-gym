@@ -26,7 +26,6 @@ import com.talosgym.talos_gym.verification.model.VerificationPurpose;
 import com.talosgym.talos_gym.verification.model.VerificationRequest;
 import com.talosgym.talos_gym.verification.model.VerificationType;
 import com.talosgym.talos_gym.verification.service.VerificationService;
-import com.talosgym.talos_gym.exception.client.InvalidInputException;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -136,16 +135,21 @@ public class AuthServiceImpl implements IAuthService {
         SecurityUser securityUser = new SecurityUser(user);
 
         String accessToken = jwtService.generateToken(generateUserClaims(securityUser), securityUser);
-        RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(user));
+        boolean rememberMe = Boolean.TRUE.equals(loginRequest.rememberMe());
+        RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(user, rememberMe));
 
-        log.info("User logged in successfully: {}", user.getId());
+        long refreshTokenExpiration = rememberMe
+                ? securityProperties.getRefreshToken().getRememberMeExpiration()
+                : securityProperties.getRefreshToken().getExpiration();
+
+        log.info("User logged in successfully: {} (rememberMe: {})", user.getId(), rememberMe);
 
         return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(savedRefreshToken.getRefreshToken())
                 .tokenType("Bearer")
                 .accessTokenExpiresIn(securityProperties.getAccessToken().getExpiration())
-                .refreshTokenExpiresIn(securityProperties.getRefreshToken().getExpiration())
+                .refreshTokenExpiresIn(refreshTokenExpiration)
                 .build();
     }
 
@@ -170,15 +174,21 @@ public class AuthServiceImpl implements IAuthService {
 
         String accessToken = jwtService.generateToken(generateUserClaims(securityUser), securityUser);
 
+        boolean rememberMe = optRefreshToken.get().isRememberMe();
+
         refreshTokenRepository.delete(optRefreshToken.get());
-        RefreshToken newRefreshToken = refreshTokenRepository.save(createRefreshToken(user));
+        RefreshToken newRefreshToken = refreshTokenRepository.save(createRefreshToken(user, rememberMe));
+
+        long refreshTokenExpiration = rememberMe
+                ? securityProperties.getRefreshToken().getRememberMeExpiration()
+                : securityProperties.getRefreshToken().getExpiration();
 
         return RefreshResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(newRefreshToken.getRefreshToken())
                 .tokenType("Bearer")
                 .accessTokenExpiresIn(securityProperties.getAccessToken().getExpiration())
-                .refreshTokenExpiresIn(securityProperties.getRefreshToken().getExpiration())
+                .refreshTokenExpiresIn(refreshTokenExpiration)
                 .build();
     }
 
@@ -224,11 +234,16 @@ public class AuthServiceImpl implements IAuthService {
         return claims;
     }
 
-    private RefreshToken createRefreshToken(User user) {
+    private RefreshToken createRefreshToken(User user, boolean rememberMe) {
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setExpiredDate(Instant.now().plusMillis(securityProperties.getRefreshToken().getExpiration()));
+        long expirationMillis = rememberMe
+                ? securityProperties.getRefreshToken().getRememberMeExpiration()
+                : securityProperties.getRefreshToken().getExpiration();
+
+        refreshToken.setExpiredDate(Instant.now().plusMillis(expirationMillis));
         refreshToken.setRefreshToken(UUID.randomUUID().toString());
         refreshToken.setUser(user);
+        refreshToken.setRememberMe(rememberMe);
         return refreshToken;
     }
 }

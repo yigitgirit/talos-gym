@@ -8,7 +8,9 @@ public record LoginRequest(
         String identifier,
 
         @NotBlank(message = "Password cannot be blank")
-        String password
+        String password,
+
+        Boolean rememberMe
 ) {
     // Compact constructor for automatic data normalization
     public LoginRequest {
@@ -16,6 +18,10 @@ public record LoginRequest(
             identifier = identifier.contains("@") ? 
                     DataNormalizationUtil.normalizeEmail(identifier) : 
                     DataNormalizationUtil.normalizePhone(identifier);
+        }
+
+        if (rememberMe == null) {
+            rememberMe = false;
         }
     }
 }
