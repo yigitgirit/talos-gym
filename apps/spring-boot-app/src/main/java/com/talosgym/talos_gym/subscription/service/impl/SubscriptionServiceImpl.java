@@ -23,15 +23,15 @@ import com.talosgym.talos_gym.subscription.service.SubscriptionService;
 import com.talosgym.talos_gym.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @Slf4j
 @Service
@@ -80,12 +80,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription = subscriptionRepository.save(subscription);
 
         try {
+
+
+            Map<String, Object> variables = Map.of(
+                    "userName", currentUser.getFirstName(),
+                    "planName", offer.getPlan().getName(),
+                    "startDate", subscription.getStartDate(),
+                    "endDate", subscription.getEndDate()
+            );
+
             NotificationRequest notification = NotificationRequest.builder()
                     .userId(currentUser.getId())
                     .recipient(currentUser.getEmail())
                     .subject("Subscription Started")
                     .category(NotificationCategory.SUBSCRIPTION)
-                    .message("Welcome to Talos Gym! Your subscription has been successfully started with reference number " + paymentReference + ".")
+                    .message("Welcome to Talos Gym! Your subscription has been successfully started.")
+                    .variables(variables)
                     .build();
             notificationService.send(notification);
         } catch (Exception e) {
@@ -99,7 +109,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Transactional(readOnly = true)
     public SubscriptionResponse getSubscriptionById(Long id) {
         Subscription subscription = getSubscriptionEntityById(id);
-        
+
         if (!subscription.getUser().getId().equals(SecurityUtils.getCurrentUserId())) {
             throw new BusinessException("You are not authorized to view this subscription", ErrorCode.FORBIDDEN);
         }
