@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import { ChevronDownIcon } from "lucide-react"
-import Link from "next/link" // Use Link for Next.js navigation
+import Link from "next/link"
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils"
 
 export function NavGroup({
-                             label, // New prop for the header text
+                             label,
                              items,
                          }: {
     label?: string
@@ -25,7 +25,7 @@ export function NavGroup({
         icon: React.ReactNode
         isActive?: boolean
         url: string
-        items?: { // Made optional for items without sub-nav
+        items?: {
             title: string
             url: string
         }[]
@@ -46,8 +46,7 @@ export function NavGroup({
     }
 
     return (
-        <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-            {/* Now displays whatever label you pass in */}
+        <SidebarGroup>
             {label && <SidebarGroupLabel>{label}</SidebarGroupLabel>}
             <SidebarMenu>
                 {items.map((item) => {
@@ -57,9 +56,10 @@ export function NavGroup({
                     return (
                         <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton
+                                tooltip={item.title}
                                 onClick={hasSubItems ? () => toggleExpanded(item.title) : undefined}
                                 className={cn(hasSubItems && "cursor-pointer")}
-                                asChild={!hasSubItems} // Use asChild only for direct links
+                                asChild={!hasSubItems}
                             >
                                 {hasSubItems ? (
                                     <>
@@ -85,7 +85,6 @@ export function NavGroup({
                                     {item.items?.map((subItem) => (
                                         <SidebarMenuSubItem key={subItem.title}>
                                             <SidebarMenuSubButton asChild>
-                                                {/* Use Link instead of <a> for better performance */}
                                                 <Link href={subItem.url}>{subItem.title}</Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>

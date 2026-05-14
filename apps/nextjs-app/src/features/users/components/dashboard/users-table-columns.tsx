@@ -105,7 +105,6 @@ const UserActionsCell = ({user}: { user: UserResponse }) => {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator/>
                     <DropdownMenuItem asChild>
-                        {/* Assuming you have a full page view for users later */}
                         <Link href={`/dashboard/users/${user.id}`}>
                             View Full Details
                         </Link>
