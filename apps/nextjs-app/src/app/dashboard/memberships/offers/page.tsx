@@ -5,7 +5,6 @@ import {parseSearchParams} from "@/lib/search-params-utils"
 import {OfferSearchUrlSchema} from "@/features/memberships/schemas";
 import {OfferManagement} from "@/features/memberships/components/dashboard/offer/offer-management";
 import {getServerApi} from "@/lib/api/server";
-import {OfferAdminResponse} from "@/lib/api/schema";
 
 type PageProps = {
     searchParams: Promise<NextPageSearchParams>;
@@ -13,13 +12,7 @@ type PageProps = {
 
 export default async function OfferManagementPage({searchParams}: PageProps) {
     const filters = await parseSearchParams(searchParams, OfferSearchUrlSchema);
-    const api = getServerApi();
-    let initialData: OfferAdminResponse[] = [];
-    try {
-        initialData = await api.get('api/management/offers', {params: filters});
-    } catch (e) {
-        console.error("Failed to fetch offers", e);
-    }
+    const initialData = await getServerApi().get('api/management/offers', { params: filters });
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-2">

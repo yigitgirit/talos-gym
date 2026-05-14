@@ -44,7 +44,7 @@ export function ClubsToolbar({ filters, updateFiltersAction, clearFiltersAction,
                         <InputGroupInput
                             {...searchProps}
                             placeholder="Search clubs..."
-                            className="h-9 text-sm bg-background"
+                            className="h-9 text-sm"
                         />
                     </InputGroup>
 
@@ -56,7 +56,7 @@ export function ClubsToolbar({ filters, updateFiltersAction, clearFiltersAction,
                         <InputGroupInput
                             {...cityProps}
                             placeholder="City"
-                            className="h-9 text-sm bg-background"
+                            className="h-9 text-sm"
                         />
                     </InputGroup>
 
@@ -68,7 +68,7 @@ export function ClubsToolbar({ filters, updateFiltersAction, clearFiltersAction,
                         <InputGroupInput
                             {...districtProps}
                             placeholder="District"
-                            className="h-9 text-sm bg-background"
+                            className="h-9 text-sm"
                         />
                     </InputGroup>
 

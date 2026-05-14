@@ -34,7 +34,7 @@ export function UsersToolbar({filters, updateFiltersAction, clearFiltersAction, 
                         <InputGroupInput
                             {...searchProps}
                             placeholder="Search users..."
-                            className="h-9 text-sm bg-background"
+                            className="h-9 text-sm"
                         />
                     </InputGroup>
 
@@ -74,13 +74,7 @@ export function UsersToolbar({filters, updateFiltersAction, clearFiltersAction, 
                     )}
                 </>
             }
-            actions={
-                <Button className="h-9" asChild>
-                    <Link href="/dashboard/users/create">
-                        <Plus className="mr-2 h-4 w-4"/> Create User
-                    </Link>
-                </Button>
-            }
+            actions={null}
         />
     )
 }

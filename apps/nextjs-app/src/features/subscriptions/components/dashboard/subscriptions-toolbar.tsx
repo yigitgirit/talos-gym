@@ -54,7 +54,7 @@ export function SubscriptionsToolbar({
                         <InputGroupInput
                             {...paymentRefProps}
                             placeholder="Payment Reference"
-                            className="h-9 text-sm bg-background"
+                            className="h-9 text-sm"
                         />
                     </InputGroup>
 
@@ -67,7 +67,7 @@ export function SubscriptionsToolbar({
                             {...planIdProps}
                             placeholder="Plan ID"
                             type="number"
-                            className="h-9 text-sm bg-background"
+                            className="h-9 text-sm"
                         />
                     </InputGroup>
 
@@ -80,7 +80,7 @@ export function SubscriptionsToolbar({
                             {...userIdProps}
                             placeholder="User ID"
                             type="number"
-                            className="h-9 text-sm bg-background"
+                            className="h-9 text-sm"
                         />
                     </InputGroup>
 
