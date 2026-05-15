@@ -1,10 +1,7 @@
 package com.talosgym.talos_gym.user.controller;
 
 import com.talosgym.talos_gym.common.PagedData;
-import com.talosgym.talos_gym.user.dto.UserBanRequest;
-import com.talosgym.talos_gym.user.dto.UpdateUserRequest;
-import com.talosgym.talos_gym.user.dto.UserResponse;
-import com.talosgym.talos_gym.user.dto.UserSearchRequest;
+import com.talosgym.talos_gym.user.dto.*;
 import com.talosgym.talos_gym.user.model.Role;
 import com.talosgym.talos_gym.user.model.UserStatus;
 import com.talosgym.talos_gym.user.service.IUserService;
@@ -24,6 +21,12 @@ import java.util.Set;
 public class UserManagementController {
 
     private final IUserService userService;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponse createUser(@Valid @RequestBody UserCreateRequest request) {
+        return userService.createUser(request);
+    }
 
     @GetMapping
     public PagedData<UserResponse> searchUser(

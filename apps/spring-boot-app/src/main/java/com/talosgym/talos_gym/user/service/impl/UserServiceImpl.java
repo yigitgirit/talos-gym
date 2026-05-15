@@ -246,12 +246,14 @@ public class UserServiceImpl implements IUserService {
     public UserResponse createUser(UserCreateRequest request) {
         CreateUserParams params = new CreateUserParams(
                 request.email(),
-                request.password(),
+                request.phoneNumber(),
                 request.firstName(),
                 request.lastName(),
                 request.gender()
         );
         User user = userDomainService.createNewUser(params, passwordEncoder.encode(request.password()));
+        user.setPhoneVerifiedAt(request.phoneVerifiedAt());
+        user.setEmailVerifiedAt(request.emailVerifiedAt());
 
         User savedUser = userDomainService.saveUser(user);
         return userMapper.userToUserResponse(savedUser);
