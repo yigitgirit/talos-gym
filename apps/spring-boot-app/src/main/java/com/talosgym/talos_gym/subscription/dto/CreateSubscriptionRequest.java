@@ -13,5 +13,7 @@ public record CreateSubscriptionRequest(
         Long subscriptionTypeId,
 
         @NotBlank(message = "Payment token is required")
-        String paymentToken
+        String paymentToken,
+
+        Long homeClubId
 ) {}
