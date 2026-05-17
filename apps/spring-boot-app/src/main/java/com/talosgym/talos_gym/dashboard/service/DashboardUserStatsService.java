@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,43 +21,13 @@ public class DashboardUserStatsService implements IDashboardUserStatsService {
 
     @Override
     public UserStatsResponse getUserStats() {
-        long totalUsers    = userStatsRepository.countTotalUsers();
-        long activeUsers   = userStatsRepository.countUsersByStatus("ACTIVE");
-        long inactiveUsers = userStatsRepository.countUsersByStatus("INACTIVE");
-        long bannedUsers   = userStatsRepository.countUsersByStatus("BANNED");
-
         Instant monthStart = YearMonth.now(ZoneOffset.UTC)
                 .atDay(1)
                 .atStartOfDay()
                 .toInstant(ZoneOffset.UTC);
         Instant weekStart  = Instant.now().minusSeconds(7L * 24 * 60 * 60);
 
-        long newUsersThisMonth = userStatsRepository.countNewUsersSince(monthStart);
-        long newUsersThisWeek  = userStatsRepository.countNewUsersSince(weekStart);
-
-        long phoneVerifiedUsers = userStatsRepository.countPhoneVerifiedUsers();
-        long emailVerifiedUsers = userStatsRepository.countEmailVerifiedUsers();
-
-        Map<String, Long> genderMap = userStatsRepository.countByGender();
-        UserStatsResponse.GenderDistribution genderDistribution = new UserStatsResponse.GenderDistribution(
-                genderMap.getOrDefault("MALE", 0L),
-                genderMap.getOrDefault("FEMALE", 0L),
-                genderMap.getOrDefault("NOT_SPECIFIED", 0L),
-                genderMap.getOrDefault("EITHER", 0L)
-        );
-
-        return new UserStatsResponse(
-                totalUsers,
-                activeUsers,
-                inactiveUsers,
-                bannedUsers,
-                newUsersThisMonth,
-                newUsersThisWeek,
-                phoneVerifiedUsers,
-                emailVerifiedUsers,
-                genderDistribution,
-                Instant.now()
-        );
+        return userStatsRepository.getUserOverviewStats(monthStart, weekStart);
     }
 
     @Override

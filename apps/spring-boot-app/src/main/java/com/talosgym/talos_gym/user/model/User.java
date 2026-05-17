@@ -15,7 +15,16 @@ import java.util.Set;
 
 @Entity
 @SQLRestriction("is_deleted = false")
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = {
+                @Index(name = "idx_users_status_created_at", columnList = "status,created_at"),
+                @Index(name = "idx_users_created_at", columnList = "created_at"),
+                @Index(name = "idx_users_phone_verified_at", columnList = "phone_verified_at"),
+                @Index(name = "idx_users_email_verified_at", columnList = "email_verified_at"),
+                @Index(name = "idx_users_gender", columnList = "gender")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
