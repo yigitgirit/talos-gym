@@ -1,19 +1,10 @@
 package com.talosgym.talos_gym.dashboard.controller;
 
-import com.talosgym.talos_gym.dashboard.dto.FilteredUserCountResponse;
-import com.talosgym.talos_gym.dashboard.dto.UserStatsFilterRequest;
-import com.talosgym.talos_gym.dashboard.dto.UserStatsResponse;
-import com.talosgym.talos_gym.dashboard.dto.FilteredSubscriptionStatsResponse;
-import com.talosgym.talos_gym.dashboard.dto.SubscriptionStatsFilterRequest;
-import com.talosgym.talos_gym.dashboard.dto.SubscriptionStatsResponse;
-import com.talosgym.talos_gym.dashboard.service.IDashboardSubscriptionStatsService;
-import com.talosgym.talos_gym.dashboard.service.IDashboardUserStatsService;
+import com.talosgym.talos_gym.dashboard.dto.*;
+import com.talosgym.talos_gym.dashboard.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/management")
@@ -23,6 +14,7 @@ public class DashboardController {
 
     private final IDashboardUserStatsService userStatsService;
     private final IDashboardSubscriptionStatsService subscriptionStatsService;
+    private final IDashboardPlanStatsService planStatsService;
 
     @GetMapping("/users/stats/overview")
     public UserStatsResponse getUserStats() {
@@ -44,5 +36,11 @@ public class DashboardController {
     public FilteredSubscriptionStatsResponse getFilteredSubscriptionStats(
             @ModelAttribute SubscriptionStatsFilterRequest request) {
         return subscriptionStatsService.getFilteredSubscriptionStats(request);
+    }
+
+    @GetMapping("/plans/popular")
+    public PlanPopularityResponse getPopularPlans(
+            @ModelAttribute PlanPopularityRequest request) {
+        return planStatsService.getPopularPlans(request);
     }
 }
