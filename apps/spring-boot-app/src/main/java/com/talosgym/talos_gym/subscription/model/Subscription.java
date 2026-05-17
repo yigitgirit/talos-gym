@@ -1,5 +1,6 @@
 package com.talosgym.talos_gym.subscription.model;
 
+import com.talosgym.talos_gym.club.model.Club;
 import com.talosgym.talos_gym.common.model.BaseEntity;
 import com.talosgym.talos_gym.membership.model.MembershipPlan;
 import com.talosgym.talos_gym.user.model.User;
@@ -21,6 +22,10 @@ public class Subscription extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "club_id",nullable = false)
+    private Club homeClub;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", nullable = false)
