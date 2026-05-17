@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 @Repository
 public class SubscriptionStatsRepository {
@@ -91,11 +93,11 @@ public class SubscriptionStatsRepository {
         }
         if (request.createdAfter() != null) {
             sql.append(" AND created_at >= :createdAfter");
-            params.addValue("createdAfter", request.createdAfter(), Types.TIMESTAMP_WITH_TIMEZONE);
+            params.addValue("createdAfter", OffsetDateTime.ofInstant(request.createdAfter(), ZoneOffset.UTC));
         }
         if (request.createdBefore() != null) {
             sql.append(" AND created_at <= :createdBefore");
-            params.addValue("createdBefore", request.createdBefore(), Types.TIMESTAMP_WITH_TIMEZONE);
+            params.addValue("createdBefore", OffsetDateTime.ofInstant(request.createdBefore(), ZoneOffset.UTC));
         }
 
         return jdbcTemplate.queryForObject(sql.toString(), params, (rs, rowNum) ->
