@@ -15,6 +15,7 @@ public class DashboardController {
     private final IDashboardUserStatsService userStatsService;
     private final IDashboardSubscriptionStatsService subscriptionStatsService;
     private final IDashboardPlanStatsService planStatsService;
+    private final IDashboardClubStatsService clubStatsService;
 
     @GetMapping("/users/stats/overview")
     public UserStatsResponse getUserStats() {
@@ -42,5 +43,11 @@ public class DashboardController {
     public PlanPopularityResponse getPopularPlans(
             @ModelAttribute PlanPopularityRequest request) {
         return planStatsService.getPopularPlans(request);
+    }
+
+    @GetMapping("/clubs/stats")
+    public ClubStatsResponse getClubsStats(
+            @ModelAttribute ClubStatsRequest request) {
+        return clubStatsService.getAllClubsStats(request);
     }
 }
