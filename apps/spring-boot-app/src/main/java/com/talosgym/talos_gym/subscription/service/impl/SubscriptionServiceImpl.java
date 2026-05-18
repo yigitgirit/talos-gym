@@ -1,5 +1,7 @@
 package com.talosgym.talos_gym.subscription.service.impl;
 
+import com.talosgym.talos_gym.club.model.Club;
+import com.talosgym.talos_gym.club.repository.ClubRepository;
 import com.talosgym.talos_gym.exception.ErrorCode;
 import com.talosgym.talos_gym.exception.client.BusinessException;
 import com.talosgym.talos_gym.exception.client.ResourceNotFoundException;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,6 +43,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final OfferRepository offerRepository;
+    private final ClubRepository clubRepository;
     private final PricingEngine pricingEngine;
     private final PaymentService paymentService;
     private final NotificationService notificationService;
@@ -56,6 +60,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Offer offer = offerRepository.findById(request.offerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Offer", "id", request.offerId()));
 
+        Club homeClub = determineHomeClub(offer, request.homeClubId());
+
         List<PaymentOptionDto> paymentOptions = pricingEngine.calculatePaymentOptions(offer);
 
         PaymentOptionDto selectedOption = paymentOptions.stream()
@@ -70,6 +76,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = Subscription.builder()
                 .user(currentUser)
                 .plan(offer.getPlan())
+                .homeClub(homeClub)
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusMonths(monthsToAdd))
                 .totalAmount(selectedOption.getTotalPrice())
@@ -80,8 +87,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription = subscriptionRepository.save(subscription);
 
         try {
-
-
             Map<String, Object> variables = Map.of(
                     "userName", currentUser.getFirstName(),
                     "planName", offer.getPlan().getName(),
@@ -104,6 +109,24 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         return mapToResponse(subscription);
     }
+
+    private Club determineHomeClub(Offer offer, Long homeClubId) {
+        Club offerClub = offer.getClub();
+
+        if (offerClub != null) {
+            if (homeClubId != null && !Objects.equals(offerClub.getId(), homeClubId)) {
+                throw new BusinessException("Home club selection is inconsistent with the offer's club.", ErrorCode.VALIDATION_ERROR);
+            }
+            return offerClub;
+        } else {
+            if (homeClubId == null) {
+                throw new BusinessException("Home club must be selected for this type of offer.", ErrorCode.VALIDATION_ERROR);
+            }
+            return clubRepository.findById(homeClubId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Club", "id", homeClubId));
+        }
+    }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -169,10 +192,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private SubscriptionResponse mapToResponse(Subscription subscription) {
+        Club homeClub = subscription.getHomeClub();
+
         return SubscriptionResponse.builder()
                 .id(subscription.getId())
                 .planId(subscription.getPlan().getId())
                 .planName(subscription.getPlan().getName())
+                .homeClubId(homeClub.getId())
+                .homeClubName(homeClub.getName() == null ? null : homeClub.getName())
                 .startDate(subscription.getStartDate())
                 .endDate(subscription.getEndDate())
                 .totalAmount(subscription.getTotalAmount())

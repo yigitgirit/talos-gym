@@ -11,6 +11,8 @@ public record SubscriptionResponse(
         Long id,
         Long planId,
         String planName,
+        Long homeClubId,
+        String homeClubName,
         LocalDate startDate,
         LocalDate endDate,
         BigDecimal totalAmount,
